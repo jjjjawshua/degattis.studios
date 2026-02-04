@@ -54,8 +54,6 @@ setInterval(updateClock, 1000);
 
 // Contact form submission
 const contactForm = document.getElementById('contact-form');
-const thankYouMessage = document.getElementById('thank-you-message');
-const contactHeading = document.getElementById('contact-heading');
 
 contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -74,25 +72,14 @@ contactForm.addEventListener('submit', function(e) {
     })
     .then(response => {
         if (response.ok) {
-            contactForm.style.display = 'none';
-            contactHeading.style.display = 'none';
-            thankYouMessage.style.display = 'block';
-            contactForm.reset();
+            window.location.href = 'thankyou.html';
         } else {
             throw new Error('Form submission failed');
         }
     })
     .catch(error => {
         alert('There was an error sending your message. Please try again.');
-    })
-    .finally(() => {
         submitButton.textContent = 'send message';
         submitButton.disabled = false;
     });
 });
-
-function resetContactForm() {
-    contactForm.style.display = 'block';
-    contactHeading.style.display = 'block';
-    thankYouMessage.style.display = 'none';
-}
