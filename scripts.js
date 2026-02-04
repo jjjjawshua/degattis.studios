@@ -51,3 +51,45 @@ cityButtons.forEach(btn => {
 
 updateClock();
 setInterval(updateClock, 1000);
+
+// Contact form submission
+const contactForm = document.getElementById('contact-form');
+const thankYouMessage = document.getElementById('thank-you-message');
+
+contactForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(contactForm);
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    submitButton.textContent = 'sending...';
+    submitButton.disabled = true;
+
+    fetch(contactForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            contactForm.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+            contactForm.reset();
+        } else {
+            throw new Error('Form submission failed');
+        }
+    })
+    .catch(error => {
+        alert('There was an error sending your message. Please try again.');
+    })
+    .finally(() => {
+        submitButton.textContent = 'send message';
+        submitButton.disabled = false;
+    });
+});
+
+function resetContactForm() {
+    contactForm.style.display = 'block';
+    thankYouMessage.style.display = 'none';
+}

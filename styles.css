@@ -315,6 +315,29 @@ nav a.active {
     opacity: 0.8;
 }
 
+#thank-you-message h2 {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+.back-button {
+    padding: 12px 30px;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.back-button:hover {
+    opacity: 0.8;
+}
+
 /* Footer */
 footer {
     text-align: center;

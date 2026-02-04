@@ -141,23 +141,24 @@
     <div id="contact" class="page">
         <div class="contact-content">
             <h2>get in touch</h2>
-            <form class="contact-form" action="https://formsubmit.co/thedeggatis@gmail.com" method="POST">
+            <form id="contact-form" class="contact-form" action="https://formsubmit.co/ajax/thedegattis@gmail.com" method="POST">
                 <input type="text" name="name" placeholder="name" required>
                 <input type="email" name="email" placeholder="email" required>
                 <textarea name="message" placeholder="message" required></textarea>
-                <!-- FormSubmit configuration -->
                 <input type="hidden" name="_subject" value="New message from degattis.studios">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_next" value="https://degattis.studios/thankyou.html">
                 <button type="submit">send message</button>
             </form>
+            <div id="thank-you-message" style="display: none; text-align: center;">
+                <h2>thank you!</h2>
+                <button class="back-button" onclick="resetContactForm()">send another message</button>
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
         <div class="social-links">
-            <a href="mailto:thedeggatis@gmail.com">email</a>
+            <a href="mailto:thedegattis@gmail.com">email</a>
             <a href="https://instagram.com/degattis.studios" target="_blank">instagram</a>
             <a href="https://open.spotify.com/user/t0dnhmkxgbecywv91l7grxz3y" target="_blank">spotify</a>
         </div>
