@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>degattis.studios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #ffffff;
+            color: #000000;
+            overflow-x: hidden;
+        }
+
+        /* Logo Animation */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .logo-container {
+            text-align: center;
+            padding: 60px 20px 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            animation: spin 20s linear infinite;
+        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .site-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+            font-weight: 400;
+            text-transform: lowercase;
+        }
+
+        /* Navigation */
+        nav {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            opacity: 0.5;
+        }
+
+        nav a.active {
+            text-decoration: underline;
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 60vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page */
+        .home-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        .home-content h1 {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .home-content p {
+            font-size: 14px;
+            line-height: 1.8;
+            letter-spacing: 0.5px;
+        }
+
+        /* Collection Page */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            padding: 20px 0;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            letter-spacing: 1px;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* Shop Page */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 50px;
+            padding: 20px 0;
+        }
+
+        .shop-item {
+            text-align: center;
+        }
+
+        .shop-item-image {
+            aspect-ratio: 1;
+            border: 1px solid #000;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .shop-item:hover .shop-item-image {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .shop-item h3 {
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .shop-item .price {
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        /* About Page */
+        .about-content {
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 2;
+            letter-spacing: 0.5px;
+        }
+
+        .about-content h2 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .about-content p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Contact Page */
+        .contact-content {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-content h2 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .contact-form {
+            text-align: left;
+            margin-bottom: 50px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #000;
+            background: transparent;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .contact-form button {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            color: #fff;
+            border: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .contact-form button:hover {
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px 40px;
+            border-top: 1px solid #000;
+            margin-top: 80px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .social-links a {
+            color: #000;
+            font-size: 14px;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: opacity 0.3s;
+        }
+
+        .social-links a:hover {
+            opacity: 0.5;
+        }
+
+        .copyright {
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        /* Page Titles */
+        .page-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin-bottom: 50px;
+            text-transform: lowercase;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 30px;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .shop-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <div class="logo-container">
+        <div class="logo">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(100, 100)">
+                    <circle r="35" fill="#6b6b5d"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(30)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(60)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(90)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(120)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(150)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(180)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(210)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(240)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(270)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(300)"/>
+                    <rect x="-8" y="-80" width="16" height="55" fill="#6b6b5d" transform="rotate(330)"/>
+                </g>
+            </svg>
+        </div>
+        <div class="site-title">degattis.studios</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#home" class="nav-link active" data-page="home">home</a></li>
+            <li><a href="#collection" class="nav-link" data-page="collection">collection</a></li>
+            <li><a href="#shop" class="nav-link" data-page="shop">shop</a></li>
+            <li><a href="#about" class="nav-link" data-page="about">about</a></li>
+            <li><a href="#contact" class="nav-link" data-page="contact">contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <div class="home-content">
+            <h1>welcome</h1>
+            <p>
+                a minimalist approach to contemporary art. 
+                exploring form, space, and simplicity through 
+                thoughtful composition and timeless design.
+            </p>
+        </div>
+    </div>
+
+    <!-- Collection Page -->
+    <div id="collection" class="page">
+        <h2 class="page-title">collection</h2>
+        <div class="gallery">
+            <div class="gallery-item">artwork 01</div>
+            <div class="gallery-item">artwork 02</div>
+            <div class="gallery-item">artwork 03</div>
+            <div class="gallery-item">artwork 04</div>
+            <div class="gallery-item">artwork 05</div>
+            <div class="gallery-item">artwork 06</div>
+        </div>
+    </div>
+
+    <!-- Shop Page -->
+    <div id="shop" class="page">
+        <h2 class="page-title">shop</h2>
+        <div class="shop-grid">
+            <div class="shop-item">
+                <div class="shop-item-image">print 01</div>
+                <h3>minimalist series no. 1</h3>
+                <p class="price">$150.00</p>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-image">print 02</div>
+                <h3>minimalist series no. 2</h3>
+                <p class="price">$150.00</p>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-image">print 03</div>
+                <h3>minimalist series no. 3</h3>
+                <p class="price">$150.00</p>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-image">print 04</div>
+                <h3>minimalist series no. 4</h3>
+                <p class="price">$150.00</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Page -->
+    <div id="about" class="page">
+        <div class="about-content">
+            <h2>about</h2>
+            <p>
+                degattis.studios is a contemporary art practice focused on 
+                minimalism, clean lines, and the beauty of simplicity.
+            </p>
+            <p>
+                each piece is thoughtfully created to evoke emotion through 
+                restraint, allowing space and form to speak for themselves.
+            </p>
+            <p>
+                based in [your location], the studio works across multiple 
+                mediums including digital art, print, and installation.
+            </p>
+        </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contact" class="page">
+        <div class="contact-content">
+            <h2>get in touch</h2>
+            <form class="contact-form" onsubmit="handleSubmit(event)">
+                <input type="text" placeholder="name" required>
+                <input type="email" placeholder="email" required>
+                <textarea placeholder="message" required></textarea>
+                <button type="submit">send message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="social-links">
+            <a href="mailto:hello@degattis.studios">email</a>
+            <a href="https://instagram.com/degattis.studios" target="_blank">instagram</a>
+        </div>
+        <p class="copyright">© 2026 degattis.studios. all rights reserved.</p>
+    </footer>
+
+    <script>
+        // Navigation functionality
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links and pages
+                navLinks.forEach(l => l.classList.remove('active'));
+                pages.forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked link
+                link.classList.add('active');
+                
+                // Show corresponding page
+                const pageId = link.getAttribute('data-page');
+                document.getElementById(pageId).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Form submission handler
+        function handleSubmit(e) {
+            e.preventDefault();
+            alert('Thank you for your message. This is a demo form - in production, this would send your message.');
+            e.target.reset();
+        }
+    </script>
+</body>
+</html>
