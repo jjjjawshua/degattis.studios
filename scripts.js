@@ -22,12 +22,6 @@ navLinks.forEach(link => {
     });
 });
 
-// Form submission handler
-function handleSubmit(e) {
-    e.preventDefault();
-    alert('Thank you for your message. This is a demo form - in production, this would send your message.');
-    e.target.reset();
-}
 
 // Clock functionality
 let currentTimezone = 'America/New_York';
