@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>privacy — degattis studios</title>
+<link rel="icon" type="image/svg+xml" href="svgs/favicon.svg">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { width: 100%; }
+  body { display: flex; flex-direction: column; min-height: 100vh; font-family: 'Courier Prime', 'Courier New', monospace; background: #faf9f6; color: #111; }
+
+  @keyframes ticker-run { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+  #ticker-strip { height: 28px; overflow: hidden; position: relative; background: inherit; }
+  #ticker-track { display: flex; align-items: center; height: 100%; white-space: nowrap; position: absolute; left: 0; top: 0; }
+  #ticker-track.running { animation: ticker-run 60s linear infinite; }
+  .ticker-text { font-size: 13px; letter-spacing: 0.12em; color: #555; padding: 0 120px 0 0; }
+  .ticker-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #5a8c6f; margin: 0 32px; vertical-align: middle; position: relative; top: -1px; }
+
+  #site-header { position: sticky; top: 0; background: #faf9f6; z-index: 10; }
+  .header-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; }
+  .wordmark { font-size: 18px; font-weight: normal; letter-spacing: 0.01em; white-space: nowrap; text-decoration: none; color: inherit; min-height: 44px; display: inline-flex; align-items: center; }
+  .wordmark:hover { opacity: 0.6; }
+  .cart-btn { background: none; border: none; font-family: 'Courier Prime', 'Courier New', monospace; font-size: 13px; letter-spacing: 0.04em; cursor: pointer; padding: 0; color: inherit; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: flex-end; }
+
+  .page-body { flex: 1; max-width: 760px; margin: 0 auto; width: 100%; padding: 72px 40px 100px; }
+  .page-label { font-size: 11px; letter-spacing: 0.14em; color: #999; margin-bottom: 48px; }
+  .page-content { font-size: 14px; line-height: 2.2; letter-spacing: 0.03em; color: #333; }
+  .page-content p { margin-bottom: 24px; }
+  .page-content h2 { font-size: 11px; letter-spacing: 0.12em; font-weight: normal; color: #999; margin: 32px 0 12px; }
+  #site-footer { border-top: 1px solid #000; padding: 32px 20px 24px; font-size: 11px; letter-spacing: 0.06em; }
+  .footer-top { display: flex; justify-content: space-between; margin-bottom: 20px; }
+  .footer-left { display: flex; flex-direction: column; gap: 10px; }
+  .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .footer-links-row { display: flex; flex-wrap: wrap; gap: 28px; }
+  .footer-links-row a, .footer-left a { color: inherit; text-decoration: none; transition: opacity 0.2s; min-height: 44px; display: inline-flex; align-items: center; }
+  .footer-links-row a:hover, .footer-left a:hover { opacity: 0.5; }
+  .footer-signup { color: #aaa; font-size: 11px; letter-spacing: 0.06em; }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .footer-copy { font-size: 10px; letter-spacing: 0.06em; color: #999; }
+  .footer-signup-row { display: flex; align-items: center; gap: 10px; }
+  .footer-signup-btn { background: none; border: 1px solid currentColor; font-family: 'Courier Prime', 'Courier New', monospace; font-size: 10px; letter-spacing: 0.08em; padding: 4px 10px; cursor: pointer; color: #888; transition: color 0.2s; min-height: 44px; display: inline-flex; align-items: center; }
+  .footer-signup-btn:hover { color: #111; }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid #5a8c6f; outline-offset: 2px; }
+
+  @media (max-width: 600px) {
+    .footer-top { flex-direction: column; gap: 16px; }
+    .footer-right { align-items: flex-start; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .ticker-text { font-size: 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ticker-track.running { animation-play-state: paused; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="site-header">
+    <div id="ticker-strip" aria-hidden="true" aria-live="off"><div id="ticker-track"></div></div>
+    <div class="header-bar">
+      <a class="wordmark" href="home-v2.html#enter">degattis studios</a>
+      <button class="cart-btn">cart (0)</button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="page-label">privacy policy</div>
+    <div class="page-content">
+      <p>last updated: may 2026</p>
+      <h2>information we collect</h2>
+      <p>we collect information you provide directly, such as your name and email when you sign up for updates or contact us. when you visit the site, we may collect basic usage data including browser type, pages visited, and time spent on site.</p>
+      <h2>how we use your information</h2>
+      <p>we use your information to respond to inquiries, send updates you've opted into, and improve the site experience. we do not sell or share your personal information with third parties for marketing purposes.</p>
+      <h2>cookies</h2>
+      <p>this site uses minimal cookies to remember your preferences (such as display settings). you can disable cookies in your browser settings at any time.</p>
+      <h2>third-party services</h2>
+      <p>we use shopify for order processing and formsubmit for contact form submissions. these services have their own privacy policies which govern their use of your data.</p>
+      <h2>your rights</h2>
+      <p>you may request access to, correction of, or deletion of your personal data at any time by contacting us at thedegattis@gmail.com.</p>
+      <h2>contact</h2>
+      <p>questions about this policy? reach us at thedegattis@gmail.com.</p>
+    </div>
+  </div>
+  <div id="site-footer">
+    <div class="footer-top">
+      <div class="footer-left">
+        <nav aria-label="site links">
+          <div class="footer-links-row">
+            <a href="about.html">about</a>
+            <a href="archive.html">archive</a>
+            <a href="privacy.html">privacy</a>
+            <a href="terms.html">terms</a>
+          </div>
+        </nav>
+      </div>
+      <div class="footer-right">
+        <nav aria-label="social links">
+          <div class="footer-links-row">
+            <a href="https://instagram.com/degattis.studios" target="_blank">instagram</a>
+            <a href="https://open.spotify.com/user/t0dnhmkxgbecywv91l7grxz3y" target="_blank">spotify</a>
+            <a href="contact.html">contact</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 degattis studios. all rights reserved.</span>
+      <div class="footer-signup-row">
+        <span class="footer-signup">sign up for updates</span>
+        <button class="footer-signup-btn">→</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function fmt(tz) {
+    return new Date().toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: tz }).toLowerCase().replace(' ', '');
+  }
+  function startTicker() {
+    const track = document.getElementById('ticker-track');
+    track.innerHTML = `<span class="ticker-text"><span class="ticker-dot"></span>new york, ny — ${fmt('America/New_York')}<span class="ticker-dot"></span>dallas, tx — ${fmt('America/Chicago')}<span class="ticker-dot"></span>ho chi minh city, vn — ${fmt('Asia/Ho_Chi_Minh')}<span class="ticker-dot"></span></span>`;
+    track.classList.add('running');
+  }
+  startTicker();
+</script>
+</body>
+</html>
