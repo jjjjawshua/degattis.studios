@@ -31,7 +31,8 @@ import { Covers } from './covers.js';
   function snap(id, o){ var k = snapKey(id, o); if (!(k in snaps)) snaps[k] = GL ? Viewer.snapshot(id, o) : null; return snaps[k]; }
   function snapLater(id, o, cb){ var k = snapKey(id, o); if (k in snaps){ cb(snaps[k]); return; } queue.push([id, o, cb]); pump(); }
   function pump(){ if (busy || !queue.length) return; busy = true; setTimeout(function(){ var j = queue.shift(); var url = snap(j[0], j[1]); try { j[2](url); } catch (e) {} busy = false; pump(); }, 0); }
-  function fillImg(img, id, o){ if (!GL){ img.hidden = true; return; } snapLater(id, o, function(u){ if (u){ img.src = u; img.hidden = false; } }); }
+  // stay hidden until the render has decoded, so the alt text never flashes in its place
+  function fillImg(img, id, o){ if (!GL){ img.hidden = true; return; } snapLater(id, o, function(u){ if (!u) return; img.hidden = true; img.onload = function(){ img.hidden = false; }; img.src = u; }); }
 
   /* ---------- toast ---------- */
   var tt; function toast(msg){ var t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(function(){ t.classList.remove('on'); }, 2200); }
@@ -590,11 +591,16 @@ import { Covers } from './covers.js';
     if (next === 'home') enterHome(); else if (next === 'product') enterProduct(arg); else if (next === 'radio') enterRadio(); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'suggest') enterSuggest(); else if (next === 'cart') renderCartPage();
     paint($('footCv'), {layout:'scatter', count:9, seed:90, size:1.1});
     // a fresh load or refresh always opens at the top; only a click on Shop scrolls down to the grid
-    if (toShop && prev !== null) after(function(){ $('shopSec').scrollIntoView({behavior: prev === 'home' && !RM ? 'smooth' : 'auto'}); });
+    // Shop and the logo always land at the top of the shop page
+    if (toShop && prev === 'home') toTop();
     else window.scrollTo(0, 0);
   }
   try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
   window.addEventListener('hashchange', route);
+  // clicking Shop or the logo while already on #shop changes no hash, so scroll up here
+  document.addEventListener('click', function(e){ var l = e.target.closest('a[href="#shop"]'); if (l && location.hash === '#shop'){ e.preventDefault(); toTop(); } });
+  // smooth where it can animate; instant with reduced motion or in a background tab
+  function toTop(){ window.scrollTo({top:0, behavior: RM || document.visibilityState !== 'visible' ? 'auto' : 'smooth'}); }
   var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){
     if (page === 'home'){ KS.fit(hc, 1.25); if (view === 'grid') paintCards($('grid')); }
     if (page === 'radio'){ enterRadio(); }
