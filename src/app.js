@@ -36,38 +36,54 @@ import { Covers } from './covers.js';
   /* ---------- toast ---------- */
   var tt; function toast(msg){ var t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(function(){ t.classList.remove('on'); }, 2200); }
 
-  /* ---------- cart ---------- */
+  /* ---------- cart: dropdown under the header, full Cart page at #cart ---------- */
   var cart = [];
   try { cart = JSON.parse(localStorage.getItem('kram-cart') || '[]') || []; } catch (e) { cart = []; }
   cart = cart.filter(function(it){ return product(it.id); });
   function saveCart(){ try { localStorage.setItem('kram-cart', JSON.stringify(cart)); } catch (e) {} }
+  function finishName(id){ var f = FINISHES.filter(function(x){ return x.id === id; })[0]; return f ? f.name : ''; }
+  function option(it){ return [it.finish ? finishName(it.finish) : '', it.size || ''].filter(Boolean).join(' · '); }
   function addToCart(id, finish, size){
     var p = product(id), key = id + '|' + (finish || '') + '|' + (size || '');
     var hit = cart.filter(function(x){ return x.key === key; })[0];
     if (hit) hit.qty++; else cart.push({key:key, id:id, finish:finish || null, size:size || null, qty:1});
-    saveCart(); renderCart(); toast('Added ' + p.name + ' to cart');
+    saveCart(); renderCart(); if (page !== 'cart') openMini(); toast('Added ' + p.name + ' to cart');
   }
+  function thumb(img, it){ fillImg(img, it.id, {finish:it.finish || 'polished', w:200, h:160, dist:16}); }
+  function totals(){ var n = 0, sub = 0; cart.forEach(function(it){ n += it.qty; sub += it.qty*product(it.id).price; }); return {n:n, sub:sub}; }
   function renderCart(){
-    var n = 0, sub = 0;
-    $('cartItems').innerHTML = cart.length ? cart.map(function(it, i){
-      var p = product(it.id), f = it.finish ? FINISHES.filter(function(x){ return x.id === it.finish; })[0].name : 'Print'; n += it.qty; sub += it.qty * p.price;
-      return '<div class="ci"><div class="plate" data-ci="' + i + '"><canvas aria-hidden="true"></canvas><img class="snap" alt="" hidden></div><div><b>' + esc(p.name) + '</b><div class="small">' + esc(p.code) + ' · ' + esc(f) + (it.size ? ' · ' + esc(it.size) : '') + '</div><div class="qty"><button type="button" data-q="' + i + '" data-d="-1" aria-label="One fewer">−</button><span>' + it.qty + '</span><button type="button" data-q="' + i + '" data-d="1" aria-label="One more">+</button><button class="link" type="button" data-rm="' + i + '" style="margin-left:8px">Remove</button></div></div><span class="price">' + money(p.price * it.qty) + '</span></div>';
-    }).join('') : '<p class="small" style="padding:24px 0;font-size:15px">Your cart is empty. Everything in the shop is a concept for now, so adding things is a way to see how it will work.</p>';
-    cart.forEach(function(it, i){ var pl = document.querySelector('[data-ci="' + i + '"]'); if (!pl) return; var p = product(it.id); if ($('cart').classList.contains('on')) KS.still(pl.querySelector('canvas'), p.art, 1.5); fillImg(pl.querySelector('img'), it.id, {finish:it.finish || 'polished', w:240, h:240}); });
-    $('cartCount').textContent = n; $('cartSub').textContent = money(sub);
-    $('checkoutBtn').disabled = !cart.length; $('cartNote').textContent = '';
+    var t = totals();
+    $('cartCount').textContent = t.n; $('miniSub').textContent = money(t.sub); $('miniCheckout').disabled = !cart.length; $('miniNote').textContent = '';
+    $('miniItems').innerHTML = cart.length ? cart.map(function(it, i){ var p = product(it.id);
+      return '<div class="mrow"><img alt="" data-mi="' + i + '" hidden><b>' + esc(p.name) + (it.qty > 1 ? ' × ' + it.qty : '') + '</b><span>' + money(p.price*it.qty) + '</span></div>'; }).join('')
+      : '<p class="mempty">Your cart is empty.</p>';
+    $('miniItems').querySelectorAll('[data-mi]').forEach(function(img){ thumb(img, cart[+img.dataset.mi]); });
+    if (page === 'cart') renderCartPage();
   }
-  $('cartItems').addEventListener('click', function(e){
-    var q = e.target.closest('[data-q]'), rm = e.target.closest('[data-rm]');
-    if (q){ var it = cart[+q.dataset.q]; it.qty += +q.dataset.d; if (it.qty < 1) cart.splice(+q.dataset.q, 1); saveCart(); renderCart(); }
+  function renderCartPage(){
+    var t = totals(), tb = $('cartTable');
+    if (!cart.length){ tb.innerHTML = '<tbody><tr><td style="padding:24px 0;font-size:15px;color:var(--ink-2)">Your cart is empty. <a href="#shop">Back to the shop</a></td></tr></tbody>'; return; }
+    tb.innerHTML = '<thead><tr><th>Product name</th><th>ID</th><th>Quantity</th><th>Option</th><th class="r">Price</th></tr></thead><tbody>'
+      + cart.map(function(it, i){ var p = product(it.id);
+        return '<tr><td><span class="pn"><img alt="" data-ci="' + i + '" hidden><a href="#product-' + p.id + '">' + esc(p.name) + '</a></span></td><td>' + esc(p.code) + '</td>'
+          + '<td><label class="sr" for="q' + i + '" style="position:absolute;left:-9999px">Quantity for ' + esc(p.name) + '</label><input type="number" id="q' + i + '" min="0" max="99" value="' + it.qty + '"><button class="tlink" type="button" data-up="' + i + '">Update</button></td>'
+          + '<td>' + (option(it) ? esc(option(it)) + '<br>' : '') + '<button class="tlink rm" type="button" data-rm="' + i + '">Remove</button></td><td class="r">' + money(p.price*it.qty) + '</td></tr>'; }).join('')
+      + '</tbody><tfoot><tr><td>Subtotal</td><td></td><td></td><td></td><td class="r">' + money(t.sub) + '</td></tr><tr><td colspan="2"></td><td colspan="3"><button class="checkout" type="button" id="pageCheckout">Checkout</button></td></tr></tfoot>';
+    tb.querySelectorAll('[data-ci]').forEach(function(img){ thumb(img, cart[+img.dataset.ci]); });
+  }
+  $('cartTable').addEventListener('click', function(e){
+    var up = e.target.closest('[data-up]'), rm = e.target.closest('[data-rm]'), co = e.target.closest('#pageCheckout');
+    if (up){ var i = +up.dataset.up, v = Math.max(0, Math.min(99, parseInt($('q' + i).value, 10) || 0)); if (v === 0) cart.splice(i, 1); else cart[i].qty = v; saveCart(); renderCart(); toast('Cart updated'); }
     if (rm){ cart.splice(+rm.dataset.rm, 1); saveCart(); renderCart(); }
+    if (co) $('cartNote').textContent = 'Checkout isn\'t connected yet, so nothing was charged. It opens with Collection 001.';
   });
-  var lastFocus = null;
-  function openCart(){ lastFocus = document.activeElement; $('cart').classList.add('on'); $('scrim').classList.add('on'); document.body.classList.add('lock'); renderCart(); after(function(){ $('cartClose').focus(); }); }
-  function closeCart(){ $('cart').classList.remove('on'); $('scrim').classList.remove('on'); document.body.classList.remove('lock'); if (lastFocus) lastFocus.focus(); }
-  $('cartBtn').onclick = openCart; $('cartClose').onclick = closeCart; $('scrim').onclick = closeCart;
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && $('cart').classList.contains('on')) closeCart(); });
-  $('checkoutBtn').onclick = function(){ $('cartNote').textContent = 'Checkout isn\'t connected yet, so nothing was charged. It opens with Collection 001.'; };
+  function openMini(){ renderCart(); $('miniCart').hidden = false; $('cartBtn').setAttribute('aria-expanded', 'true'); }
+  function closeMini(){ $('miniCart').hidden = true; $('cartBtn').setAttribute('aria-expanded', 'false'); }
+  $('cartBtn').onclick = function(e){ e.stopPropagation(); if ($('miniCart').hidden) openMini(); else closeMini(); };
+  document.addEventListener('click', function(e){ if (!$('miniCart').hidden && !e.target.closest('#miniCart') && !e.target.closest('[data-add]') && !e.target.closest('#pAdd')) closeMini(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('miniCart').hidden){ closeMini(); $('cartBtn').focus(); } });
+  $('miniEdit').onclick = function(){ closeMini(); };
+  $('miniCheckout').onclick = function(){ $('miniNote').textContent = 'Checkout isn\'t connected yet, so nothing was charged.'; };
 
   /* ---------- product card ---------- */
   function card(p){
@@ -163,36 +179,41 @@ import { Covers } from './covers.js';
     renderShop();
   }
 
-  /* ---------- product page ---------- */
-  var cur = null, curFinish = 'polished', mediaMode = 'images', thumbIdx = 0, inspecting = false;
-  function shots(p){
-    var paper = !p.finishes;
-    var palettes = [p.art.palette, 'halo', 'pool', 'dawn'];
-    var S = paper ? [{ay:0, cap:'Front'}, {ay:.75, ax:-.15, cap:'Angle'}, {ax:.35, ay:-.55, dist:10, cap:'Close'}, {wire:true, cap:'Drawing'}]
-                  : [{cap:'Front'}, {ay:1.0, cap:'Side'}, {ax:-.9, ay:.2, cap:'Top'}, {detail:true, cap:'Vermilion detail'}];
-    return S.map(function(s, i){ var o = {w:900, h:920, finish: paper ? undefined : curFinish}; ['ax','ay','dist','wire','detail'].forEach(function(k){ if (s[k] !== undefined) o[k] = s[k]; }); return {o:o, cap:s.cap, art:Object.assign({}, p.art, {palette: s.wire ? 'halo' : palettes[i], seed: p.art.seed + i, veil: s.wire ? .6 : p.art.veil})}; });
-  }
+  /* ---------- product page: big still or live 3D on the left, details on the right, more views on scroll ---------- */
+  var cur = null, curFinish = 'polished', curSize = null, mediaMode = 'images', inspecting = false;
+  var RING_MM = {'US 5':'15.7', 'US 6':'16.5', 'US 7':'17.3', 'US 8':'18.1', 'US 9':'19.0', 'US 10':'19.8', 'US 11':'20.6', 'US 12':'21.4'};
   function renderMedia(){
-    var p = cur, S = shots(p), m = S[thumbIdx];
+    var p = cur;
     $('mImages').setAttribute('aria-pressed', mediaMode === 'images'); $('m3d').setAttribute('aria-pressed', mediaMode === '3d');
     $('mImagesView').hidden = mediaMode !== 'images'; $('m3dView').hidden = mediaMode !== '3d';
-    $('mHint').textContent = mediaMode === 'images' ? 'Renders until prototype photos are shot' : (GL ? 'Live model' : '3D unavailable');
+    $('mHint').textContent = mediaMode === 'images' ? 'Render · photos once prototypes are made' : (GL ? 'Live model' : '3D unavailable');
     if (mediaMode === 'images'){
       Viewer.unmount();
-      var img = $('pMainImg'); img.alt = p.name + ', ' + m.cap.toLowerCase() + ' render'; fillImg(img, p.id, m.o);
+      var img = $('pMainImg'); img.alt = p.name + ' in ' + finishName(curFinish).toLowerCase(); fillImg(img, p.id, {w:1000, h:1020, finish:curFinish});
     } else {
       $('noGL').hidden = GL;
       after(function(){ if (GL){ Viewer.mount($('p3dHost')); Viewer.finish(curFinish); if (Viewer.current() !== p.id) Viewer.show(p.id); Viewer.inspect(inspecting); } });
     }
   }
-  // scrolling down the product page shows the object large and close up, one view after another
+  // scrolling down shows the object large and close up, one angle after another
   function renderDetails(){
-    var p = cur, D = p.finishes
-      ? [{ay:.85, ax:-.3, dist:10.5, cap:'Three-quarter'}, {ay:1.5, ax:-.05, dist:8, cap:'Profile'}, {detail:true, cap:'The vermilion part'}, {ax:-1.15, ay:.3, dist:9, cap:'From above'}, {ay:-.6, ax:.35, dist:7, cap:'Edge and finish'}]
-      : [{dist:9.5, cap:'Front'}, {ay:.75, ax:-.15, dist:9, cap:'Angle'}, {ax:.3, ay:-.5, dist:6, cap:'Print close up'}];
+    var p = cur, D = [{ay:.85, ax:-.3, dist:10.5, cap:'Three-quarter'}, {ay:1.5, ax:-.05, dist:8, cap:'Profile'}, {detail:true, cap:'The vermilion part'}, {ax:-1.15, ay:.3, dist:9, cap:'From above'}, {ay:-.6, ax:.35, dist:7, cap:'Edge and finish'}];
     $('pDetails').innerHTML = D.map(function(d, i){ return '<figure class="dfig"><div class="plate clean"><img class="snap" alt="' + esc(p.name + ', ' + d.cap.toLowerCase()) + '" hidden></div><figcaption class="mono">' + (i + 1) + ' / ' + D.length + ' · ' + esc(d.cap) + '</figcaption></figure>'; }).join('');
-    after(function(){ $('pDetails').querySelectorAll('.dfig').forEach(function(f, i){ var o = Object.assign({w:1600, h:1000}, D[i]); delete o.cap; if (p.finishes) o.finish = curFinish; if (window.innerWidth < 600){ o.w = 800; o.h = 1000; } fillImg(f.querySelector('img'), p.id, o); }); });
+    after(function(){ $('pDetails').querySelectorAll('.dfig').forEach(function(f, i){ var o = Object.assign({w:1300, h:1330, finish:curFinish}, D[i]); delete o.cap; if (window.innerWidth < 600){ o.w = 800; o.h = 820; } fillImg(f.querySelector('img'), p.id, o); }); });
   }
+  function renderSide(){
+    var p = cur;
+    $('pSizeWrap').innerHTML = p.sizes ? p.sizes.map(function(s){ return '<button type="button" data-s="' + esc(s) + '" aria-pressed="' + (s === curSize) + '">' + esc(s) + '</button>'; }).join('') : '';
+    $('pFinishes').innerHTML = p.finishes.map(function(fid){ return '<button type="button" data-f="' + fid + '" aria-pressed="' + (fid === curFinish) + '" aria-label="' + finishName(fid) + '" title="' + finishName(fid) + '"><img alt="" hidden></button>'; }).join('');
+    after(function(){ $('pFinishes').querySelectorAll('[data-f]').forEach(function(b){ fillImg(b.querySelector('img'), p.id, {w:220, h:220, finish:b.dataset.f, dist:16}); }); });
+    var dims = (p.spec.filter(function(r){ return r[0] === 'Size'; })[0] || [])[1];
+    $('pMeta').textContent = 'Shown in ' + finishName(curFinish) + (dims ? ' · ' + dims : '');
+  }
+  $('pSizeWrap').addEventListener('click', function(e){ var b = e.target.closest('[data-s]'); if (!b) return; curSize = b.dataset.s; $('pSizeWrap').querySelectorAll('[data-s]').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); });
+  $('pFinishes').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; curFinish = b.dataset.f;
+    $('pFinishes').querySelectorAll('[data-f]').forEach(function(x){ x.setAttribute('aria-pressed', x === b); });
+    var dims = (cur.spec.filter(function(r){ return r[0] === 'Size'; })[0] || [])[1]; $('pMeta').textContent = 'Shown in ' + finishName(curFinish) + (dims ? ' · ' + dims : '');
+    Viewer.finish(curFinish); if (mediaMode === 'images') renderMedia(); renderDetails(); });
   $('mImages').onclick = function(){ mediaMode = 'images'; inspecting = false; syncInspect(); renderMedia(); };
   $('m3d').onclick = function(){ mediaMode = '3d'; renderMedia(); };
   $('zIn').onclick = function(){ Viewer.zoomBy(.85); }; $('zOut').onclick = function(){ Viewer.zoomBy(1.18); };
@@ -200,28 +221,25 @@ import { Covers } from './covers.js';
   $('pInspect').onclick = function(){
     if (!GL){ var df = $('pDetails').children[2]; if (df) df.scrollIntoView({behavior: RM ? 'auto' : 'smooth', block:'center'}); return; }
     inspecting = !inspecting; if (mediaMode !== '3d'){ mediaMode = '3d'; Viewer.show(cur.id); }
-    syncInspect(); renderMedia();
+    syncInspect(); renderMedia(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
   };
-  $('pAdd').onclick = function(){ addToCart(cur.id, cur.finishes ? curFinish : null, cur.sizes ? $('pSize').value : null); };
+  $('pAdd').onclick = function(e){ e.stopPropagation(); if (cur.sizes && !curSize){ toast('Choose a size first'); $('pSizeWrap').querySelector('button').focus(); return; } addToCart(cur.id, curFinish, cur.sizes ? curSize : null); };
+  $('pBack').onclick = function(e){ if (history.length > 1 && prevPage){ e.preventDefault(); history.back(); } };
   function enterProduct(id){
     var p = product(id); if (!p){ location.hash = 'shop'; return; }
-    cur = p; curFinish = 'polished'; thumbIdx = 0; inspecting = false; mediaMode = 'images';
-    $('pCat').textContent = CATS.filter(function(c){ return c[0] === p.cat; })[0][1]; $('pCodeCrumb').textContent = p.code + ' ' + p.name;
-    $('pName').textContent = p.name; $('pShort').textContent = p.short; $('pPrice').textContent = money(p.price); $('pCode').textContent = p.code;
+    cur = p; curFinish = 'polished'; curSize = null; inspecting = false; mediaMode = 'images';
+    $('pName').textContent = p.name; $('pPrice').textContent = money(p.price);
+    $('pQuips').innerHTML = (p.quips || []).map(function(q){ return '<li>' + esc(q) + '</li>'; }).join('');
     $('pCopy').textContent = p.copy;
     $('pSpec').innerHTML = [['Part', p.code]].concat(p.spec).map(function(r){ return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('');
-    $('pFinWrap').hidden = !p.finishes; $('pSizeWrap').hidden = !p.sizes;
-    $('pInspect').hidden = !p.finishes;
-    if (p.finishes){ $('pFinishes').innerHTML = p.finishes.map(function(fid){ var f = FINISHES.filter(function(x){ return x.id === fid; })[0]; return '<button class="chip" type="button" data-f="' + fid + '" aria-pressed="' + (fid === curFinish) + '"><i style="background:' + f.sw + '"></i>' + f.name + '</button>'; }).join(''); }
-    if (p.sizes){ $('pSize').innerHTML = p.sizes.map(function(s){ return '<option' + (s === 'US 9' ? ' selected' : '') + '>' + s + '</option>'; }).join(''); }
+    $('pSizeChartWrap').hidden = !p.sizes;
+    $('pSizeChart').innerHTML = p.sizes ? '<thead><tr><th>Size</th><th>Inside diameter</th></tr></thead><tbody>' + p.sizes.map(function(s){ return '<tr><td>' + esc(s) + '</td><td>' + (RING_MM[s] || '—') + ' mm</td></tr>'; }).join('') + '</tbody>' : '';
+    $('pInspect').hidden = !GL;
     var ps = p.post && post(p.post);
     $('pPostWrap').innerHTML = ps ? '<span class="lab">From the journal</span>' + postCard(ps) : '';
     if (ps) after(function(){ paintPosts($('pPostWrap'), [ps]); });
-    syncInspect(); renderMedia(); renderDetails();
+    renderSide(); syncInspect(); renderMedia(); renderDetails();
   }
-  $('pFinishes').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; curFinish = b.dataset.f;
-    $('pFinishes').querySelectorAll('.chip').forEach(function(c){ c.setAttribute('aria-pressed', c.dataset.f === curFinish); });
-    Viewer.finish(curFinish); if (mediaMode === 'images') renderMedia(); renderDetails(); });
 
   /* ---------- radio ---------- */
   var ed = 0, rpm = 33.333;
@@ -558,18 +576,18 @@ import { Covers } from './covers.js';
   })();
 
   /* ---------- router ---------- */
-  var page = null;
+  var page = null, prevPage = null;
   function route(){
     var h = (location.hash || '').slice(1), next = 'home', arg = null, toShop = h === 'shop';
     if (h.indexOf('product-') === 0){ next = 'product'; arg = h.slice(8); }
     else if (h.indexOf('post-') === 0){ next = 'post'; arg = h.slice(5); }
-    else if (h === 'radio' || h === 'journal' || h === 'about' || h === 'suggest') next = h;
+    else if (h === 'radio' || h === 'journal' || h === 'about' || h === 'suggest' || h === 'cart') next = h;
     if (page === 'radio' && next !== 'radio' && docked) setDocked(false);
     Viewer.unmount();
     document.querySelectorAll('[data-page]').forEach(function(el){ el.hidden = el.dataset.page !== next; });
     document.querySelectorAll('[data-nav]').forEach(function(a){ var on = a.dataset.nav === next || (next === 'product' && a.dataset.nav === 'home') || (next === 'post' && a.dataset.nav === 'journal'); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-    var prev = page; page = next;
-    if (next === 'home') enterHome(); else if (next === 'product') enterProduct(arg); else if (next === 'radio') enterRadio(); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'suggest') enterSuggest();
+    var prev = page; prevPage = prev; page = next; closeMini();
+    if (next === 'home') enterHome(); else if (next === 'product') enterProduct(arg); else if (next === 'radio') enterRadio(); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'suggest') enterSuggest(); else if (next === 'cart') renderCartPage();
     paint($('footCv'), {layout:'scatter', count:9, seed:90, size:1.1});
     // a fresh load or refresh always opens at the top; only a click on Shop scrolls down to the grid
     if (toShop && prev !== null) after(function(){ $('shopSec').scrollIntoView({behavior: prev === 'home' && !RM ? 'smooth' : 'auto'}); });

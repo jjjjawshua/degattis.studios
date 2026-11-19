@@ -22,7 +22,14 @@
     <nav aria-label="Pages">
       <a href="#shop" data-nav="home">Shop</a><a href="#radio" data-nav="radio">Radio</a><a href="#journal" data-nav="journal">Journal</a><a href="#suggest" data-nav="suggest">Suggest</a><a href="#about" data-nav="about">About</a>
     </nav>
-    <button class="cartBtn" id="cartBtn" type="button">Cart (<span id="cartCount">0</span>)</button>
+    <button class="cartBtn" id="cartBtn" type="button" aria-expanded="false" aria-controls="miniCart">Cart (<span id="cartCount">0</span>)</button>
+    <div class="minicart" id="miniCart" hidden>
+      <div class="mitems" id="miniItems"></div>
+      <a class="edit" href="#cart" id="miniEdit">Edit cart</a>
+      <div class="msub"><span>Subtotal</span><span id="miniSub">$0</span></div>
+      <button class="checkout" type="button" id="miniCheckout">Checkout</button>
+      <p class="small" id="miniNote" aria-live="polite"></p>
+    </div>
   </div>
 </header>
 
@@ -66,48 +73,55 @@
 
 <!-- ============ PRODUCT ============ -->
 <div data-page="product" hidden>
-  <main class="wrap">
-    <div class="crumb mono"><a href="#shop">Shop</a><span>/</span><span id="pCat"></span><span>/</span><span id="pCodeCrumb"></span></div>
-    <div class="pgrid">
-      <div class="media">
+  <main class="wrap pwrap">
+    <a class="back" href="#shop" id="pBack"><span aria-hidden="true">‹</span> Back</a>
+    <div class="pp">
+      <div class="pcol">
         <div class="mtabs">
-          <div class="seg" role="group" aria-label="Media">
-            <button type="button" id="mImages" aria-pressed="true">Images</button>
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" id="mImages" aria-pressed="true">Still</button>
             <button type="button" id="m3d" aria-pressed="false">3D</button>
           </div>
-          <span class="mono" id="mHint">Renders until prototype photos are shot</span>
+          <span class="mono" id="mHint"></span>
         </div>
-        <div class="mview" id="mImagesView">
-          <div class="plate clean" id="pMain"><img class="snap" id="pMainImg" alt=""></div>
+        <div class="pstage">
+          <div class="plate clean" id="mImagesView"><img class="snap" id="pMainImg" alt=""></div>
+          <div class="pstage3d" id="m3dView" hidden>
+            <div class="host stage3d" id="p3dHost" role="img" aria-label="3D model. Drag to turn it; pinch or use the buttons to zoom."></div>
+            <span class="mono hint">Drag to turn · pinch or use + and − to zoom</span>
+            <div class="ctl3d"><button type="button" id="zOut" aria-label="Zoom out">−</button><button type="button" id="zIn" aria-label="Zoom in">+</button></div>
+            <p class="small" id="noGL" hidden style="position:absolute;left:14px;right:14px;top:14px;background:rgba(246,245,249,.92);padding:10px 12px">This browser couldn't start 3D graphics. The Still view shows renders of the same model.</p>
+          </div>
         </div>
-        <div class="mview" id="m3dView" hidden>
-          <div class="plate clean"></div>
-          <div class="host stage3d" id="p3dHost" style="position:absolute;inset:0" role="img" aria-label="3D model. Drag to turn it; pinch or use the buttons to zoom."></div>
-          <span class="mono hint" id="p3dHint">Drag to turn · pinch or use + and − to zoom</span>
-          <div class="ctl3d"><button type="button" id="zOut" aria-label="Zoom out">−</button><button type="button" id="zIn" aria-label="Zoom in">+</button></div>
-          <p class="small" id="noGL" hidden style="position:absolute;left:14px;right:14px;top:14px;background:rgba(246,245,249,.92);padding:10px 12px">This browser couldn't start 3D graphics. The Images tab shows renders of the same model.</p>
-        </div>
+        <div class="pdetails" id="pDetails" aria-label="More views"></div>
       </div>
-      <div class="pinfo">
-        <div>
-          <span class="flag"><svg class="screw"><use href="#screw"/></svg>Concept · not yet for sale</span>
-          <div class="nm" id="pName" style="margin-top:10px"></div>
-          <p class="small" id="pShort" style="margin-top:8px;font-size:16px"></p>
-        </div>
-        <div class="buy">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span class="price" id="pPrice"></span><span class="mono" id="pCode"></span></div>
-          <div id="pFinWrap" style="display:grid;gap:8px"><span class="lab">Finish</span><div class="chips" id="pFinishes"></div></div>
-          <div id="pSizeWrap" style="display:grid;gap:8px"><label class="lab" for="pSize">Size</label><select id="pSize"></select></div>
-          <button class="btn" id="pAdd" type="button">Add to cart</button>
-          <button class="btn ghost" id="pInspect" type="button" aria-pressed="false"><svg class="screw"><use href="#screw"/></svg><span>Inspect the vermilion part</span></button>
-          <p class="small">Concept price. Checkout isn't connected yet.</p>
-        </div>
-        <p id="pCopy"></p>
-        <dl class="spec" id="pSpec"></dl>
+      <aside class="pside" aria-label="Product details">
+        <h1 class="pname" id="pName"></h1>
+        <div class="pprice" id="pPrice"></div>
+        <div class="psizes" id="pSizeWrap" role="group" aria-label="Size"></div>
+        <button class="addbtn" type="button" id="pAdd">Add to cart</button>
+        <ul class="quips" id="pQuips"></ul>
+        <p class="pmeta" id="pMeta"></p>
+        <details class="pmore"><summary>Technical details</summary><p id="pCopy"></p><dl class="spec" id="pSpec"></dl></details>
+        <details class="pmore" id="pSizeChartWrap"><summary>Size chart</summary><table class="sizechart" id="pSizeChart"></table></details>
+        <details class="pmore"><summary>Care</summary><p>Wipe with a soft dry cloth. Polished and brushed steel can be brought back with a non-abrasive metal polish. Keep the vermilion part away from solvents and bleach.</p></details>
+        <button class="linkbtn" type="button" id="pInspect" aria-pressed="false"><span>Inspect the vermilion part</span></button>
+        <div class="pfins" id="pFinishes" role="group" aria-label="Finish"></div>
+        <p class="small">Concept price and specs. Checkout isn't connected yet.</p>
         <div id="pPostWrap"></div>
-      </div>
+      </aside>
     </div>
-    <section class="details" id="pDetails" aria-label="Details"></section>
+  </main>
+</div>
+
+<!-- ============ CART ============ -->
+<div data-page="cart" hidden>
+  <main class="wrap">
+    <section class="block" style="padding-top:40px">
+      <h1 class="carttitle">Cart</h1>
+      <div class="ctable-wrap"><table class="ctable" id="cartTable"></table></div>
+      <p class="small" id="cartNote" aria-live="polite" style="margin-top:12px"></p>
+    </section>
   </main>
 </div>
 
@@ -316,17 +330,7 @@
   </div></div>
 </footer>
 
-<div class="scrim" id="scrim"></div>
-<aside class="cart" id="cart" aria-label="Cart">
-  <header><h3 style="font-size:22px">Cart</h3><button class="link" id="cartClose" type="button">Close</button></header>
-  <div class="citems" id="cartItems"></div>
-  <div class="cfoot">
-    <div class="row"><span class="lab">Subtotal</span><span class="price" id="cartSub" style="font-size:22px">$0</span></div>
-    <p class="small">Shipping and tax are calculated at checkout.</p>
-    <button class="btn" id="checkoutBtn" type="button">Checkout</button>
-    <p class="small" id="cartNote" aria-live="polite"></p>
-  </div>
-</aside>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script type="module" src="/src/main.js"></script>
