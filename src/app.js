@@ -15,11 +15,14 @@ import { Covers } from './covers.js';
 
   /* ---------- wordmark ---------- */
   var kmN = 0;
-  function kmark(kind){ var word = '<span class="wm">kram.</span>'; return kind === 'hero' ? '<span class="lock" role="img" aria-label="kram.">' + word + '</span>' : '<span class="lock" role="img" aria-label="kram"><svg class="kmk" aria-hidden="true"><use href="#kmark"/></svg>' + word + '</span>'; }
+  function kmark(kind){ var word = '<span class="wm">degattis studios</span>'; return '<span class="lock" role="img" aria-label="degattis studios"><svg class="kmk" aria-hidden="true"><use href="#kmark"/></svg>' + word + '</span>'; }
   document.querySelectorAll('[data-kmark]').forEach(function(el){ el.innerHTML = kmark(el.dataset.kmark); });
   // hero fills the screen below the header, so the shop starts just out of frame
-  function barH(){ var b = document.querySelector('.bar'); if (b) document.documentElement.style.setProperty('--barH', b.offsetHeight + 'px'); }
-  barH(); window.addEventListener('resize', barH);
+  /* ---------- side column: on phones it folds away behind Menu ---------- */
+  function setMenu(open){ $('side').classList.toggle('open', open); $('menuBtn').setAttribute('aria-expanded', open); $('menuBtn').textContent = open ? 'Close' : 'Menu'; document.documentElement.style.overflow = open ? 'hidden' : ''; if (open) window.dispatchEvent(new Event('resize')); }
+  $('menuBtn').onclick = function(){ setMenu(!$('side').classList.contains('open')); };
+  $('sideBody').addEventListener('click', function(e){ if (e.target.closest('a[href^="#"]')) setMenu(false); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && $('side').classList.contains('open')){ setMenu(false); $('menuBtn').focus(); } });
 
   /* ---------- stills: spectral plates drawn when their page is visible ---------- */
   function paint(canvas, opts){ if (canvas.offsetParent === null) return; KS.still(canvas, opts, 1.5); }
@@ -108,10 +111,11 @@ import { Covers } from './covers.js';
 
   /* ---------- home / shop ---------- */
   var cat = 'all';
-  CATS.forEach(function(c){ var b = document.createElement('button'); b.type = 'button'; b.textContent = c[1]; b.dataset.c = c[0]; b.onclick = function(){ cat = c[0]; renderShop(); }; $('catChips').appendChild(b); });
+  CATS.forEach(function(c){ var b = document.createElement('button'); b.type = 'button'; b.textContent = c[1]; b.dataset.c = c[0]; b.onclick = function(){ location.hash = c[0] === 'all' ? 'shop' : 'shop-' + c[0]; }; $('catChips').appendChild(b); });
   function list(){ return PRODUCTS.filter(function(p){ return cat === 'all' || p.cat === cat; }); }
   function renderShop(){
     var L = list();
+    document.querySelectorAll('.snav [data-cat]').forEach(function(l){ if (l.dataset.cat === cat) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current'); });
     $('catChips').querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.c === cat); });
     Viewer.unmount(); $('grid').innerHTML = ''; L.forEach(function(p){ $('grid').appendChild(card(p)); }); after(function(){ paintCards($('grid')); });
   }
@@ -122,8 +126,13 @@ import { Covers } from './covers.js';
   function paintPosts(root, L){ root.querySelectorAll('.pcard').forEach(function(c, i){ cover(c.querySelector('canvas'), L[i]); }); }
 
   // hero
-  var hc = $('heroCv'), hero = KS.create(hc, {layout:'ring', count:9, seed:4, size:1.2, spread:1.1, cx:.64, cy:.46, spin:.00005});
-  var ptr = {x:.64, y:.46, s:0}, tgt = {x:.64, y:.46, s:0}, heroOn = true, last = 0;
+  // the logo is painted into the colour field, so it blurs and smears exactly like the shapes around it
+  var heroLogo = new Image(), logoAt = {img:heroLogo, cx:.5, cy:.44, w:.86, h:.56, parts:[{y0:0, y1:.7, soft:.3}, {y0:.7, y1:1, soft:.14}]};
+  var hc = $('heroCv'), hero = KS.create(hc, {layout:'ring', count:9, seed:4, size:1.2, spread:1.1, cx:.5, cy:.46, spin:.00005});
+  function placeLogo(){ var wide = hc.clientWidth > hc.clientHeight; logoAt.w = wide ? .86 : .94; logoAt.cy = wide ? .44 : .42; hero.set({under: Object.assign({}, logoAt)}); }
+  heroLogo.onload = function(){ placeLogo(); if (page === 'home') hero.render(0); };
+  heroLogo.src = './brand/degattis-logo.webp';
+  var ptr = {x:.5, y:.46, s:0}, tgt = {x:.5, y:.46, s:0}, heroOn = true, last = 0;
   hc.addEventListener('pointermove', function(e){ var r = hc.getBoundingClientRect(); tgt.x = (e.clientX - r.left) / r.width; tgt.y = (e.clientY - r.top) / r.height; tgt.s = 1; });
   hc.addEventListener('pointerleave', function(){ tgt.s = 0; });
   if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ heroOn = es[0].isIntersecting; }).observe(hc);
@@ -133,13 +142,11 @@ import { Covers } from './covers.js';
     ptr.x += (tgt.x - ptr.x)*.08; ptr.y += (tgt.y - ptr.y)*.08; ptr.s += (tgt.s - ptr.s)*.05;
     var sp = Math.max(0, Math.min(1, (window.scrollY || 0) / (hc.clientHeight || 1)));
     hero.set({pointer: ptr.s > .01 ? {x:ptr.x, y:ptr.y, s:ptr.s} : null, veil:.1 + sp*.45, spread:1.1 + sp*.25}); hero.render(RM ? 0 : t);
-    if (!RM) $('heroMark').style.transform = 'translateY(' + (sp*-30).toFixed(1) + 'px)';
   }
   requestAnimationFrame(heroFrame);
 
   // the footer mark lines up under "Shop the collection": its column takes the button's width (and, on phones, its left edge)
-  function alignMark(){ var b = document.querySelector('.hero .cta'); if (!b || !b.offsetWidth) return; document.documentElement.style.setProperty('--ctaW', b.offsetWidth + 'px'); }
-  function enterHome(){ after(function(){ KS.fit(hc, 1.25); hero.render(0); alignMark(); }); }
+  function enterHome(){ after(function(){ KS.fit(hc, 1.25); placeLogo(); hero.render(0); }); }
 
   /* ---------- product page: big still or live 3D on the left, details on the right, more views on scroll ---------- */
   var cur = null, curFinish = 'polished', curSize = null, mediaMode = 'images';
@@ -271,13 +278,13 @@ import { Covers } from './covers.js';
     requestAnimationFrame(frame);
   })();
 
-  /* ---------- outside links: KRAM Radio lives on Spotify ---------- */
+  /* ---------- outside links: degattis radio lives on Spotify ---------- */
   document.querySelectorAll('[data-link]').forEach(function(el){
     var url = LINKS[el.dataset.link];
     if (url){ el.href = url; return; }
     el.removeAttribute('href'); el.removeAttribute('target'); el.setAttribute('aria-disabled', 'true');
     el.classList.add('soon'); if (el.classList.contains('flink')){ el.title = 'Coming soon'; return; }
-    if (el.classList.contains('spotify')) el.textContent = 'KRAM Radio on Spotify · coming soon';
+    if (el.classList.contains('spotify')) el.textContent = 'degattis radio on Spotify · coming soon';
     else { var s = el.querySelector('.small'); if (s) s.textContent = 'A new playlist every two weeks · coming soon'; }
   });
 
@@ -300,10 +307,12 @@ import { Covers } from './covers.js';
     if (h.indexOf('product-') === 0){ next = 'product'; arg = h.slice(8); }
     else if (h.indexOf('post-') === 0){ next = 'post'; arg = h.slice(5); }
     else if (h.indexOf('shop-') === 0){ next = 'shop'; var c0 = h.slice(5); if (CATS.some(function(c){ return c[0] === c0; })) cat = c0; }
-    else if (h === 'shop' || h === 'journal' || h === 'about' || h === 'contact' || h === 'cart' || h === 'terms' || h === 'account') next = h;
+    else if (h === 'shop'){ next = 'shop'; cat = 'all'; }
+    else if (h === 'journal' || h === 'about' || h === 'contact' || h === 'cart' || h === 'terms' || h === 'account') next = h;
     Viewer.unmount();
     document.querySelectorAll('[data-page]').forEach(function(el){ el.hidden = el.dataset.page !== next; });
     document.querySelectorAll('[data-nav]').forEach(function(a){ var on = a.dataset.nav === next || ((next === 'product' || next === 'shop') && a.dataset.nav === 'shop') || (next === 'post' && a.dataset.nav === 'journal'); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    if (next !== 'shop') document.querySelectorAll('.snav [data-cat]').forEach(function(l){ l.removeAttribute('aria-current'); });
     var prev = page; prevPage = prev; page = next; closeMini();
     if (next === 'home') enterHome(); else if (next === 'shop') renderShop(); else if (next === 'product') enterProduct(arg); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'cart') renderCartPage();
     window.scrollTo(0, 0);
@@ -315,7 +324,7 @@ import { Covers } from './covers.js';
   // smooth where it can animate; instant with reduced motion or in a background tab
   function toTop(){ window.scrollTo({top:0, behavior: RM || document.visibilityState !== 'visible' ? 'auto' : 'smooth'}); }
   var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){
-    if (page === 'home'){ KS.fit(hc, 1.25); alignMark(); }
+    if (page === 'home'){ KS.fit(hc, 1.25); placeLogo(); }
     if (page === 'shop') paintCards($('grid'));
   }, 180); });
   renderCart(); route();
