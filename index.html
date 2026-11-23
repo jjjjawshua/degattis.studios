@@ -20,7 +20,7 @@
   <div class="wrap">
     <a class="logo" href="#" aria-label="kram. home"><svg class="kmk" aria-hidden="true"><use href="#kmark"/></svg><span class="wm">kram.</span></a>
     <nav aria-label="Pages">
-      <a href="#shop" data-nav="shop">Shop</a><a href="#journal" data-nav="journal">Journal</a><a href="#about" data-nav="about">About</a>
+      <a href="#shop" data-nav="shop">Shop</a><a href="#journal" data-nav="journal">Journal</a><a href="#about" data-nav="about">About</a><a href="#contact" data-nav="contact">Contact</a>
     </nav>
     <button class="cartBtn" id="cartBtn" type="button" aria-expanded="false" aria-controls="miniCart">Cart (<span id="cartCount">0</span>)</button>
     <div class="minicart" id="miniCart" hidden>
@@ -92,7 +92,6 @@
         <details class="pmore" id="pSizeChartWrap"><summary>Size chart</summary><table class="sizechart" id="pSizeChart"></table></details>
         <details class="pmore"><summary>Shipping &amp; returns</summary><p>Shipping and returns are set when Collection 001 goes on sale. Prices here are concepts, and checkout isn't connected yet.</p></details>
         <details class="pmore"><summary>Care</summary><p>Wipe with a soft dry cloth. Polished and brushed steel can be brought back with a non-abrasive metal polish. Keep the vermilion part away from solvents and bleach.</p></details>
-        <div class="prow"><a class="pnext" id="pNext" href="#shop">Next object ›</a></div>
       </aside>
     </div>
   </main>
@@ -114,15 +113,6 @@
   <main class="wrap">
     <section class="block" style="padding-top:40px">
       <div class="shead stack"><h1>How the objects get made</h1><span class="mono">Journal</span><p>Research, inspiration, sketches and CAD for each piece, plus notes on KRAM Radio. Posts marked draft are written from the brief and will be replaced with real process material.</p></div>
-      <div class="nl">
-        <div><h2 style="font-size:clamp(24px,2.6vw,32px)">The newsletter</h2><p class="small" style="margin-top:8px;font-size:15px">One email when an object moves from sketch to prototype, and one when a new Radio edition is up. Nothing else.</p></div>
-        <form id="nlForm" novalidate>
-          <label class="lab" for="nlEmail" style="flex-basis:100%">Email</label>
-          <input type="email" id="nlEmail" placeholder="you@example.com" autocomplete="email" required>
-          <button class="btn" type="submit">Sign up</button>
-          <p class="small" id="nlNote" aria-live="polite" style="flex-basis:100%"></p>
-        </form>
-      </div>
       <div class="toolbar"><div class="chips" id="jChips" role="group" aria-label="Topic"></div><div style="display:flex;gap:12px;align-items:center"><span class="mono" id="jCount"></span><button class="chip" type="button" id="jShuffle">Shuffle covers</button></div></div>
       <div class="posts" id="posts"></div>
     </section>
@@ -174,26 +164,26 @@
         <div style="display:grid;gap:12px"><svg class="kmk" aria-hidden="true" style="width:clamp(120px,13vw,180px);height:clamp(120px,13vw,180px)"><use href="#kmark"/></svg><p class="small" style="font-size:15px">Around the objects there's a world of images and sound: optical artwork, short films and KRAM Radio. The objects are hard and exact. Everything around them is soft.</p></div>
       </div>
     </section>
-    <section class="block">
-      <div class="shead stack"><h2>From sketch to steel</h2><span class="mono">How we work</span></div>
-      <div class="cols">
-        <div><span class="mono">Sketch</span><h3>Start on paper</h3><p class="small" style="font-size:15px">Every object starts as a pencil outline around something real: a bottle cap, a key, a finger.</p></div>
-        <div><span class="mono">CAD</span><h3>Model in millimetres</h3><p class="small" style="font-size:15px">The drawing becomes a CAD model, tested in 3D for weight, edges and how the vermilion part fits.</p></div>
-        <div><span class="mono">Make</span><h3>Cut, machine, finish</h3><p class="small" style="font-size:15px">Waterjet, CNC and hand finishing in 316L stainless or 6061 aluminium. Then the screw goes in.</p></div>
-      </div>
-    </section>
-    <section class="block">
-      <div class="shead stack"><h2>Socials and contact</h2><span class="mono">Follow</span><p>The handles below are placeholders until the accounts are live.</p></div>
-      <div class="socials">
-        <div class="soc"><span class="mono">Instagram</span><b>@kram.objects</b><span class="small">Photos, films and drops · placeholder</span></div>
-        <div class="soc"><span class="mono">TikTok</span><b>@kram.objects</b><span class="small">Short process videos · placeholder</span></div>
-        <a class="soc" data-link="spotify" href="#" target="_blank" rel="noopener"><span class="mono">Spotify</span><b>KRAM Radio ↗</b><span class="small">A new playlist every two weeks</span></a>
-        <div class="soc"><span class="mono">Email</span><b>hello@kram.studio</b><span class="small">Press, stockists and commissions · placeholder</span></div>
-      </div>
-    </section>
-    <section class="block">
-      <div class="shead stack"><h2>The system behind the look</h2><span class="mono">Design desk</span></div>
-      <div class="chips"><a class="btn ghost" href="./tools/board.html" target="_blank" rel="noopener">Visual direction board</a><a class="btn ghost" href="./tools/radio-covers.html" target="_blank" rel="noopener">Radio cover generator</a></div>
+  </main>
+</div>
+
+<!-- ============ CONTACT ============ -->
+<div data-page="contact" hidden>
+  <main class="wrap">
+    <section class="contact" aria-labelledby="cTitle">
+      <h1 id="cTitle">Contact</h1>
+      <a class="cmail" href="mailto:hello@kram.studio">hello@kram.studio</a>
+      <form class="cform" id="cForm" novalidate>
+        <div class="csel"><select id="cTopic" aria-label="Topic" required>
+          <option value="" selected disabled>Topic</option>
+          <option>Order</option><option>Product question</option><option>Sizing</option><option>Press</option><option>Stockists</option><option>Commissions</option><option>Other</option>
+        </select></div>
+        <input id="cOrder" type="text" placeholder="Order number, if any" aria-label="Order number, if any" autocomplete="off">
+        <input id="cName" type="text" placeholder="Name" aria-label="Name" autocomplete="name" required>
+        <input id="cEmail" type="email" placeholder="Email" aria-label="Email" autocomplete="email" required>
+        <textarea id="cMsg" rows="7" placeholder="Message" aria-label="Message" required></textarea>
+        <div class="csub"><p class="small" id="cNote" aria-live="polite"></p><button class="csend" type="submit">Send</button></div>
+      </form>
     </section>
   </main>
 </div>
@@ -210,7 +200,7 @@
         <a href="#shop">Everything</a><a href="#shop-carry">Carry</a><a href="#shop-jewellery">Jewellery</a><a href="#shop-desk">Desk</a><a href="#shop-home">Home</a>
       </nav>
       <nav class="fcol" aria-labelledby="fh-studio"><p class="fh" id="fh-studio">Studio</p>
-        <a href="#about">About</a><a href="#journal">Journal</a>
+        <a href="#about">About</a><a href="#journal">Journal</a><a href="#contact">Contact</a>
       </nav>
       <nav class="fcol" aria-labelledby="fh-boring"><p class="fh" id="fh-boring">Boring stuff</p>
         <a href="#terms">Terms</a><a href="#account">Account</a><a href="#cart">Cart</a>
