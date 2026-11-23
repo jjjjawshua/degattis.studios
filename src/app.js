@@ -187,7 +187,6 @@ import { Covers } from './covers.js';
     $('pSpec').innerHTML = [['Part', p.code]].concat(p.spec).map(function(r){ return '<li>' + esc(r[0]) + ': ' + esc(r[1]) + '</li>'; }).join('');
     $('pSizeChartWrap').hidden = !p.sizes;
     $('pSizeChart').innerHTML = p.sizes ? '<thead><tr><th>Size</th><th>Inside diameter</th></tr></thead><tbody>' + p.sizes.map(function(s){ return '<tr><td>' + esc(s) + '</td><td>' + (RING_MM[s] || '—') + ' mm</td></tr>'; }).join('') + '</tbody>' : '';
-    var k = PRODUCTS.indexOf(p), nx = PRODUCTS[(k + 1) % PRODUCTS.length]; $('pNext').href = '#product-' + nx.id; $('pNext').setAttribute('aria-label', 'Next object: ' + nx.name);
     renderSide(); renderMedia(); renderDetails();
   }
 
@@ -202,8 +201,16 @@ import { Covers } from './covers.js';
     $('jCount').textContent = L.length + (L.length === 1 ? ' post' : ' posts');
     $('posts').innerHTML = L.map(postCard).join(''); after(function(){ paintPosts($('posts'), L); });
   }
-  $('nlForm').addEventListener('submit', function(e){ e.preventDefault(); var v = $('nlEmail').value.trim();
-    $('nlNote').textContent = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) ? 'Thanks. Sign-up isn\'t connected yet, so nothing was sent or saved.' : 'Enter an email address like name@example.com.'; });
+  /* ---------- contact ---------- */
+  $('cForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var miss = ['cTopic', 'cName', 'cEmail', 'cMsg'].filter(function(id){ return !$(id).value.trim(); });
+    var badMail = $('cEmail').value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('cEmail').value.trim());
+    ['cTopic', 'cName', 'cEmail', 'cMsg'].forEach(function(id){ $(id).setAttribute('aria-invalid', miss.indexOf(id) > -1 || (id === 'cEmail' && badMail)); });
+    if (miss.length){ $('cNote').textContent = 'Fill in the topic, your name, email and a message.'; $(miss[0]).focus(); return; }
+    if (badMail){ $('cNote').textContent = 'Enter an email address like name@example.com.'; $('cEmail').focus(); return; }
+    $('cNote').textContent = 'Thanks. The form isn\'t connected yet, so nothing was sent. Email us directly for now.';
+  });
   function enterPost(id){
     var p = post(id); if (!p){ location.hash = 'journal'; return; }
     $('postTag').textContent = p.tag;
@@ -293,7 +300,7 @@ import { Covers } from './covers.js';
     if (h.indexOf('product-') === 0){ next = 'product'; arg = h.slice(8); }
     else if (h.indexOf('post-') === 0){ next = 'post'; arg = h.slice(5); }
     else if (h.indexOf('shop-') === 0){ next = 'shop'; var c0 = h.slice(5); if (CATS.some(function(c){ return c[0] === c0; })) cat = c0; }
-    else if (h === 'shop' || h === 'journal' || h === 'about' || h === 'cart' || h === 'terms' || h === 'account') next = h;
+    else if (h === 'shop' || h === 'journal' || h === 'about' || h === 'contact' || h === 'cart' || h === 'terms' || h === 'account') next = h;
     Viewer.unmount();
     document.querySelectorAll('[data-page]').forEach(function(el){ el.hidden = el.dataset.page !== next; });
     document.querySelectorAll('[data-nav]').forEach(function(a){ var on = a.dataset.nav === next || ((next === 'product' || next === 'shop') && a.dataset.nav === 'shop') || (next === 'post' && a.dataset.nav === 'journal'); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
