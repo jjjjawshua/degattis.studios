@@ -17,8 +17,8 @@ The build is a plain static site (`base: './'`), so `dist/` can go on any static
 
 | Page | Hash | What it does |
 | --- | --- | --- |
-| Home | `#` | The degattis studios logo (`public/brand/degattis-logo.webp`) behind the frosted glass fills the first screen; the footer sits below |
-| Shop | `#shop`, `#shop-<category>` | 30 objects in a gallery by category; hover a tile for a second angle; footer links open it filtered |
+| Home | `#` | The degattis studios logo (`public/brand/degattis-logo.webp`) behind the frosted glass fills the screen |
+| Shop | `#shop`, `#shop-<category>` | 30 objects in a gallery by category; hover a tile for a second angle; side links open it filtered |
 | Product | `#product-<id>` | Name, price, finish, size, add to cart and details; renders or live 3D, close-ups on scroll |
 | Journal | `#journal`, `#post-<id>` | Posts with generative covers |
 | About | `#about` | Who the studio is |
@@ -26,7 +26,7 @@ The build is a plain static site (`base: './'`), so `dist/` can go on any static
 | Cart | `#cart` | Cart page; the header Cart (n) opens a dropdown |
 | Terms, Account | `#terms`, `#account` | Draft terms; account placeholder until checkout |
 
-The footer on every page shows the live New York time (ET) and date, columns of links (Follow along, Shop, Studio, Boring stuff), a mailing-list form and, at the far right, the turning chrome mark.
+Every page has a side column (Stüssy-style): the logo, shop categories, Journal/About/Contact, Instagram/Spotify/Terms/Account, a mailing-list form, the live New York time (ET) and date, and the turning chrome mark. The cart stays top right. On phones the column folds behind a Menu button. Type is set in Doto, a square-dot font.
 
 Two studio tools ship as standalone pages in `public/tools/`: the visual direction board and the Radio cover generator.
 
@@ -36,7 +36,7 @@ Two studio tools ship as standalone pages in `public/tools/`: the visual directi
 index.html          markup for every page (hash-routed)
 src/main.js         entry: styles + app
 src/styles.css      all styles; tokens at the top (Halo paper, plum ink, vermilion)
-src/app.js          router, shop views, product page, cart, journal, outside links, footer mark
+src/app.js          router, shop views, product page, cart, journal, outside links, side column, chrome mark
 src/data.js         catalogue (PRODUCTS), journal POSTS, outside LINKS
 src/viewer.js       one shared three.js renderer: product models, finishes, snapshots
 src/covers.js       generative journal covers
