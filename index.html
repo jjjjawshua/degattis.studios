@@ -20,7 +20,7 @@
   <div class="wrap">
     <a class="logo" href="#shop" aria-label="kram shop"><svg class="kmk" aria-hidden="true"><use href="#kmark"/></svg><span class="wm">kram.</span></a>
     <nav aria-label="Pages">
-      <a href="#shop" data-nav="home">Shop</a><a href="#radio" data-nav="radio">Radio</a><a href="#journal" data-nav="journal">Journal</a><a href="#suggest" data-nav="suggest">Suggest</a><a href="#about" data-nav="about">About</a>
+      <a href="#shop" data-nav="home">Shop</a><a href="#journal" data-nav="journal">Journal</a><a href="#about" data-nav="about">About</a>
     </nav>
     <button class="cartBtn" id="cartBtn" type="button" aria-expanded="false" aria-controls="miniCart">Cart (<span id="cartCount">0</span>)</button>
     <div class="minicart" id="miniCart" hidden>
@@ -125,50 +125,6 @@
   </main>
 </div>
 
-<!-- ============ RADIO ============ -->
-<div data-page="radio" hidden>
-  <main class="wrap">
-    <section class="block" style="padding-top:40px">
-      <div class="shead stack"><h1>The crate</h1><span class="mono">KRAM Radio</span><p>A new Spotify playlist every two weeks. Pick a record from the crate, put it on the deck, then open the playlist. Once it's turning, grab the record to slow it down or scratch.</p></div>
-      <div class="toolbar"><span class="mono" id="crateCount"></span><div class="chips"><button class="btn ghost" id="crPrev" type="button">Previous edition</button><button class="btn ghost" id="crNext" type="button">Next edition</button></div></div>
-      <div class="crate" id="crate" role="group" aria-label="Editions"></div>
-    </section>
-    <div class="radio" style="margin-top:28px">
-      <div>
-        <div class="rstage" id="rstage">
-          <canvas class="bgart" id="rbg" aria-hidden="true"></canvas>
-          <div class="sleeve" id="sleeve"><canvas id="sleeveCv" aria-hidden="true"></canvas>
-            <div class="t wm" style="left:8%;top:7%;font-size:clamp(20px,3vw,40px)">kram.<br>radio</div>
-            <div class="t wm" id="sleeveNo" style="left:8%;bottom:7%;font-size:clamp(14px,1.8vw,24px)">001</div>
-          </div>
-          <div class="deck" id="deck"><div class="platter" id="platter"></div><div class="arm"></div><div class="led"></div></div>
-          <div class="record" id="record" role="button" tabindex="0" aria-label="KRAM Radio record. Press Enter to put it on the deck.">
-            <div class="disc" id="disc"><canvas id="discCv" aria-hidden="true"></canvas><div class="lbl"><span>KRAM</span></div></div>
-          </div>
-          <div class="rhud"><span class="mono" id="rstatus">Record in sleeve</span><span class="mono" id="rpmRead">33⅓ rpm</span></div>
-        </div>
-        <div class="rctrl">
-          <button class="btn" id="playBtn" type="button">Put record on</button>
-          <div class="chips" role="group" aria-label="Speed"><button class="chip" type="button" data-rpm="33.333" aria-pressed="true">33⅓</button><button class="chip" type="button" data-rpm="45" aria-pressed="false">45</button></div>
-          <label class="lab" for="vol">Volume</label><input type="range" id="vol" min="0" max="1" step="0.01" value="0.6">
-        </div>
-        <p class="small" style="margin-top:10px">The deck plays a sound generated in your browser for each edition. The music itself is on Spotify.</p>
-      </div>
-      <div>
-        <span class="mono" id="edMeta"></span>
-        <div class="ed-title" id="edTitle"></div>
-        <p class="small" id="edSound" style="margin-bottom:16px"></p>
-        <ol class="tracks" id="tracks"></ol>
-        <div class="chips" style="margin-top:18px">
-          <button class="btn dark" id="spotifyBtn" type="button" disabled>Open in Spotify</button>
-          <a class="btn ghost" href="./tools/radio-covers.html" target="_blank" rel="noopener">Cover generator</a>
-        </div>
-        <p class="small" style="margin-top:10px">Playlist link goes live on release day. Placeholder for now.</p>
-      </div>
-    </div>
-  </main>
-</div>
-
 <!-- ============ JOURNAL ============ -->
 <div data-page="journal" hidden>
   <main class="wrap">
@@ -198,96 +154,6 @@
   </main>
 </div>
 
-<!-- ============ SUGGEST ============ -->
-<div data-page="suggest" hidden>
-  <main class="wrap">
-    <section class="block" style="padding-top:40px">
-      <div class="shead stack"><h1>Make it with us</h1><span class="mono">Suggest · open call</span><p>Sketch an object here or send us your files. Each month we pick designs to develop. If yours goes into production, you're credited and we split the profit 50/50.</p></div>
-      <div class="cols">
-        <div><span class="mono">Send it</span><h3>Sketch or upload</h3><p class="small" style="font-size:15px">Draw on the pad below, or upload drawings, renders or CAD screenshots as images or PDFs.</p></div>
-        <div><span class="mono">We review</span><h3>Once a month</h3><p class="small" style="font-size:15px">We look at every submission and reply within 30 days if we'd like to develop yours.</p></div>
-        <div><span class="mono">Make it together</span><h3>50/50, credited</h3><p class="small" style="font-size:15px">We handle CAD, prototypes and production. You approve the final piece and share the profit on every one sold.</p></div>
-      </div>
-    </section>
-
-    <section class="block">
-      <div class="shead stack"><h2>Show us the idea</h2><span class="mono">Your design</span><p>One rule from the studio: one vermilion part, everything else bare material. Use the red pen for it.</p></div>
-      <div class="sgrid">
-        <div class="sleft">
-          <div class="mtabs">
-            <div class="seg" role="group" aria-label="How to send it">
-              <button type="button" id="sgSketchTab" aria-pressed="true">Sketch it here</button>
-              <button type="button" id="sgUploadTab" aria-pressed="false">Upload files</button>
-            </div>
-            <span class="mono" id="sgHint">Draw with a mouse, pen or finger</span>
-          </div>
-          <div id="sgSketch">
-            <div class="pad"><canvas id="skCv" width="1200" height="900" aria-label="Sketch pad"></canvas></div>
-            <div class="tools">
-              <div class="chips" role="group" aria-label="Pen">
-                <button class="chip" type="button" data-tool="ink" aria-pressed="true"><i style="background:#221b29"></i>Ink</button>
-                <button class="chip" type="button" data-tool="red" aria-pressed="false"><i style="background:#e9553a"></i>Vermilion part</button>
-                <button class="chip" type="button" data-tool="erase" aria-pressed="false"><i style="background:#fff"></i>Eraser</button>
-              </div>
-              <label class="lab" for="skSize">Size</label><input type="range" id="skSize" min="1" max="24" step="1" value="4">
-              <label class="lab" for="skTrace">Trace</label>
-              <select id="skTrace"><option value="">Blank page</option></select>
-              <div class="chips"><button class="chip" type="button" id="skUndo">Undo</button><button class="chip" type="button" id="skClear">Clear</button></div>
-            </div>
-          </div>
-          <div id="sgUpload" hidden>
-            <label class="drop" id="drop" for="sgFiles">
-              <input type="file" id="sgFiles" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf">
-              <b>Drop files here or choose them</b>
-              <span class="small">PNG, JPG, WebP, GIF or PDF · up to 5 files · 20 MB each. Export CAD as screenshots or a PDF.</span>
-            </label>
-            <ul class="flist" id="fileList"></ul>
-          </div>
-        </div>
-
-        <form class="sform" id="sgForm" novalidate>
-          <div class="field"><label class="lab" for="sgTitle">Design name</label><input type="text" id="sgTitle" maxlength="60" placeholder="e.g. Hinge Bookmark" required></div>
-          <div class="two">
-            <div class="field"><label class="lab" for="sgCat">Category</label><select id="sgCat"><option>Carry</option><option>Jewellery</option><option>Desk</option><option>Home</option><option>Print</option><option>Something else</option></select></div>
-            <div class="field"><label class="lab" for="sgMat">Materials</label><input type="text" id="sgMat" maxlength="80" placeholder="e.g. stainless, aluminium"></div>
-          </div>
-          <div class="field"><label class="lab" for="sgDesc">What is it, and what does the vermilion part do?</label><textarea id="sgDesc" rows="5" maxlength="1200" required placeholder="A bookmark that clips onto the page with a small hinge. The red pin is the hinge."></textarea></div>
-          <div class="two">
-            <div class="field"><label class="lab" for="sgName">Your name or studio</label><input type="text" id="sgName" maxlength="60" autocomplete="name" required></div>
-            <div class="field"><label class="lab" for="sgContact">Email or Instagram</label><input type="text" id="sgContact" maxlength="80" placeholder="so we can reach you" required></div>
-          </div>
-          <label class="check"><input type="checkbox" id="sgOwn" required> <span>This is my original work, and I have the right to share it.</span></label>
-          <label class="check"><input type="checkbox" id="sgTerms" required> <span>I've read the partnership terms below.</span></label>
-          <button class="btn" type="submit" id="sgSend">Send to the studio</button>
-          <p class="small" id="sgNote" aria-live="polite"></p>
-        </form>
-      </div>
-    </section>
-
-    <section class="block" id="mineSec" hidden>
-      <div class="shead stack"><h2>Your submissions</h2><span class="mono">Sent</span></div>
-      <div class="subs" id="mine"></div>
-    </section>
-
-    <section class="block" id="inboxSec" hidden>
-      <div class="shead stack"><h2>Submissions</h2><span class="mono">Studio inbox · only you see this</span><p id="inboxCount"></p></div>
-      <div class="chips" id="inboxFilter" role="group" aria-label="Status" style="margin-bottom:16px"></div>
-      <div class="subs" id="inbox"></div>
-    </section>
-
-    <section class="block">
-      <div class="shead stack"><h2>How the 50/50 works</h2><span class="mono">Partnership terms · draft</span><p>These terms are a draft. They become binding only in a written agreement we both sign before production.</p></div>
-      <ol class="terms">
-        <li><b>You keep your idea.</b> Sending a design doesn't transfer anything. If we don't pick it within 90 days, it stays entirely yours.</li>
-        <li><b>We develop it at our cost.</b> CAD, prototypes, tooling and photography are on us. You see each stage and approve the final piece.</li>
-        <li><b>Profit is split 50/50.</b> Net profit on every unit sold: the price, less materials, manufacturing, packaging, shipping, payment fees and tax. Paid quarterly with a statement.</li>
-        <li><b>You're credited.</b> Your name goes on the product page, the packaging insert and the journal post about the piece.</li>
-        <li><b>Exclusive while it's on sale.</b> While we sell the object, you agree not to license the same design elsewhere. If we stop making it for 12 months, the rights come back to you.</li>
-      </ol>
-    </section>
-  </main>
-</div>
-
 <!-- ============ ABOUT ============ -->
 <div data-page="about" hidden>
   <main class="wrap">
@@ -311,7 +177,7 @@
       <div class="socials">
         <div class="soc"><span class="mono">Instagram</span><b>@kram.objects</b><span class="small">Photos, films and drops · placeholder</span></div>
         <div class="soc"><span class="mono">TikTok</span><b>@kram.objects</b><span class="small">Short process videos · placeholder</span></div>
-        <div class="soc"><span class="mono">Spotify</span><b>KRAM Radio</b><span class="small">A playlist every two weeks · placeholder</span></div>
+        <a class="soc" data-link="spotify" href="#" target="_blank" rel="noopener"><span class="mono">Spotify</span><b>KRAM Radio ↗</b><span class="small">A new playlist every two weeks</span></a>
         <div class="soc"><span class="mono">Email</span><b>hello@kram.studio</b><span class="small">Press, stockists and commissions · placeholder</span></div>
       </div>
     </section>
@@ -326,7 +192,7 @@
   <div class="plate"><canvas id="footCv" aria-hidden="true"></canvas></div>
   <div class="over"><div class="wrap fgrid">
     <div class="fleft"><span class="mono">kram. · Objects of interest</span><div class="fmark" data-kmark="foot"></div></div>
-    <div class="fright"><nav aria-label="Footer"><a href="#shop">Shop</a><a href="#radio">Radio</a><a href="#journal">Journal</a><a href="#suggest">Suggest</a><a href="#about">About</a></nav><div class="spinlogo" id="spinLogo" role="img" aria-label="kram. mark"></div><span class="mono">Collection 001 · not for sale yet</span></div>
+    <div class="fright"><nav aria-label="Footer"><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#about">About</a></nav><div class="spinlogo" id="spinLogo" role="img" aria-label="kram. mark"></div><a class="mono spotify" data-link="spotify" href="#" target="_blank" rel="noopener">KRAM Radio on Spotify ↗</a><span class="mono">Collection 001 · not for sale yet</span></div>
   </div></div>
 </footer>
 

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { KramSpectral } from './spectral.js';
-import { CATS, FINISHES, PRODUCTS, product, EDITIONS, POSTS, post } from './data.js';
+import { CATS, FINISHES, PRODUCTS, product, POSTS, post, LINKS } from './data.js';
 import { Viewer } from './viewer.js';
 import { Covers } from './covers.js';
 
@@ -242,122 +242,6 @@ import { Covers } from './covers.js';
     renderSide(); syncInspect(); renderMedia(); renderDetails();
   }
 
-  /* ---------- radio ---------- */
-  var ed = 0, rpm = 33.333;
-  var rstage = $('rstage'), rec = $('record'), disc = $('disc'), deck = $('deck'), platter = $('platter'), sleeve = $('sleeve');
-  EDITIONS.forEach(function(e, i){
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'sl'; b.dataset.i = i;
-    b.innerHTML = '<span class="plate">' + plateHTML('<span class="t wm" style="left:8%;top:7%;color:#fff;font-size:clamp(14px,1.6vw,20px)">kram.<br>radio</span><span class="t wm" style="left:8%;bottom:7%;color:#fff;font-size:clamp(12px,1.2vw,16px)">' + e.no + '</span>') + '</span><span class="mono">' + e.no + ' · ' + e.date + '</span><b>' + esc(e.title) + '</b>';
-    b.onclick = function(){ setEdition(i); };
-    $('crate').appendChild(b);
-  });
-  function edArt(e){ return {layout:e.layout, count:e.layout === 'grid' ? 9 : e.layout === 'column' ? 5 : e.layout === 'orbit' ? 6 : 8, seed:e.seed, palette:e.palette, cx:e.layout === 'ring' ? .58 : .5, cy:.56, size:e.layout === 'column' ? 1.3 : 1, streak:e.layout === 'orbit' ? .22 : .6}; }
-  function drawRadioArt(){
-    var e = EDITIONS[ed];
-    paint($('sleeveCv'), edArt(e)); paint($('discCv'), {layout:'orbit', count:7, seed:e.seed + 1, palette:e.palette, streak:.2, edge:0, veil:.05}); paint($('rbg'), {layout:'ring', count:8, seed:2, size:1.2, veil:.25});
-  }
-  function setEdition(i){
-    if (docked) setDocked(false);
-    ed = (i + EDITIONS.length) % EDITIONS.length; var e = EDITIONS[ed];
-    $('crate').querySelectorAll('.sl').forEach(function(b, k){ b.setAttribute('aria-pressed', k === ed); });
-    var sb = $('crate').children[ed]; if (sb && page === 'radio') sb.scrollIntoView({behavior: RM ? 'auto' : 'smooth', block:'nearest', inline:'center'});
-    $('crateCount').textContent = 'Edition ' + (ed + 1) + ' of ' + EDITIONS.length;
-    $('sleeveNo').textContent = e.no;
-    $('edMeta').textContent = 'Edition ' + e.no + ' · ' + e.date + (e.tracks ? ' · proposed selection' : ' · upcoming');
-    $('edTitle').textContent = e.title; $('edSound').textContent = 'Deck sound: ' + e.sound;
-    $('tracks').innerHTML = e.tracks ? e.tracks.map(function(t, k){ return '<li><span class="n">' + (k < 9 ? '0' : '') + (k + 1) + '</span><div><b>' + esc(t[0]) + '</b><span>' + esc(t[1]) + '</span></div></li>'; }).join('')
-      : '<li><span class="n">—</span><div><b>Selection in progress</b><span>Eight tracks, chosen two weeks before release</span></div></li>';
-    if (page === 'radio') drawRadioArt();
-  }
-  $('crPrev').onclick = function(){ setEdition(ed - 1); }; $('crNext').onclick = function(){ setEdition(ed + 1); };
-  $('crate').addEventListener('keydown', function(e){ if (e.key === 'ArrowRight'){ e.preventDefault(); setEdition(ed + 1); $('crate').children[ed].focus(); } if (e.key === 'ArrowLeft'){ e.preventDefault(); setEdition(ed - 1); $('crate').children[ed].focus(); } });
-  document.querySelectorAll('[data-rpm]').forEach(function(b){ b.onclick = function(){ rpm = +b.dataset.rpm; document.querySelectorAll('[data-rpm]').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); $('rpmRead').textContent = (rpm > 40 ? '45' : '33⅓') + ' rpm'; }; });
-
-  var docked = false, rdrag = null;
-  function rel(el){ var a = el.getBoundingClientRect(), b = rstage.getBoundingClientRect(); return {x:a.left - b.left + a.width/2, y:a.top - b.top + a.height/2, w:a.width}; }
-  function placeRecord(anim){
-    if (rstage.offsetParent === null) return;
-    var p = rel(platter), s = rel(sleeve), size = p.w*.96;
-    rec.style.width = rec.style.height = size + 'px';
-    var home = rstage.clientWidth < 520 ? {x:s.x, y:s.y + s.w*.38} : {x:s.x + s.w*.42, y:s.y};
-    var at = docked ? p : home;
-    rec.classList.toggle('anim', !!anim);
-    rec.style.left = (at.x - size/2) + 'px'; rec.style.top = (at.y - size/2) + 'px'; rec.style.zIndex = docked ? 4 : 1;
-  }
-  function angleAt(e){ var r = rec.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2)); }
-  rec.addEventListener('pointerdown', function(e){ e.preventDefault(); var r = rec.getBoundingClientRect();
-    rdrag = {ox:e.clientX - r.left, oy:e.clientY - r.top, sx:e.clientX, sy:e.clientY, moved:false, scratch:docked, a:angleAt(e), t:performance.now()};
-    rec.classList.add('drag'); rec.classList.remove('anim'); if (!docked) rec.style.zIndex = 5; try { rec.setPointerCapture(e.pointerId); } catch (_) {} });
-  rec.addEventListener('pointermove', function(e){ if (!rdrag) return;
-    if (Math.hypot(e.clientX - rdrag.sx, e.clientY - rdrag.sy) > 4) rdrag.moved = true;
-    if (rdrag.scratch){ var a = angleAt(e), da = a - rdrag.a; if (da > Math.PI) da -= 2*Math.PI; if (da < -Math.PI) da += 2*Math.PI;
-      var now = performance.now(), dt = Math.max(8, now - rdrag.t); rdrag.a = a; rdrag.t = now; angle += da; held = true; handSpeed = (da/dt) / (2*Math.PI*rpm/60000); return; }
-    var b = rstage.getBoundingClientRect(); rec.style.left = (e.clientX - b.left - rdrag.ox) + 'px'; rec.style.top = (e.clientY - b.top - rdrag.oy) + 'px'; });
-  function recUp(){ if (!rdrag) return; var d = rdrag; rdrag = null; rec.classList.remove('drag'); held = false;
-    if (!d.moved){ setDocked(!docked); return; } if (d.scratch) return;
-    var a = rel(rec), p = rel(platter); setDocked(Math.hypot(a.x - p.x, a.y - p.y) < p.w*.55); }
-  rec.addEventListener('pointerup', recUp); rec.addEventListener('pointercancel', recUp);
-  rec.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); setDocked(!docked); } });
-  $('playBtn').onclick = function(){ setDocked(!docked); };
-  function setDocked(d){
-    docked = d; placeRecord(true); deck.classList.toggle('on', d);
-    $('playBtn').textContent = d ? 'Take record off' : 'Put record on';
-    rec.setAttribute('aria-label', d ? 'KRAM Radio record, playing. Press Enter to take it off.' : 'KRAM Radio record. Press Enter to put it on the deck.');
-    $('rstatus').textContent = d ? 'Playing · Ed. ' + EDITIONS[ed].no + ' ' + EDITIONS[ed].title : 'Record in sleeve';
-    if (d) audioStart(); else audioStop();
-  }
-  var angle = 0, speed = 0, held = false, handSpeed = 0, lastT = 0;
-  function spin(t){ requestAnimationFrame(spin);
-    var dt = lastT ? Math.min(50, t - lastT) : 16; lastT = t;
-    if (held){ speed += (handSpeed - speed)*.5; handSpeed *= .85; } else speed += ((docked ? 1 : 0) - speed)*(docked ? .035 : .06);
-    if (!held) angle += speed*(2*Math.PI*rpm/60000)*dt*(RM ? .25 : 1);
-    if (page === 'radio') disc.style.transform = 'rotate(' + angle + 'rad)';
-    setPitch(speed); }
-  requestAnimationFrame(spin);
-
-  var AC = null, master = null, bus = null, timers = [], layer = null;
-  function setPitch(s){ if (!AC || !bus) return; var r = Math.abs(s)*(rpm/33.333), c = 1200*Math.log2(Math.max(.06, r));
-    bus.offset.setTargetAtTime(Math.max(-4800, Math.min(2400, c)), AC.currentTime, .03);
-    if (layer) layer.duck.gain.setTargetAtTime(Math.min(1, Math.abs(s)*1.4), AC.currentTime, .05); }
-  function makeCtx(){ var C = window.AudioContext || window.webkitAudioContext; if (!C) return false; AC = new C();
-    master = AC.createGain(); master.gain.value = 0; var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200;
-    var conv = AC.createConvolver(), len = AC.sampleRate*4.5, buf = AC.createBuffer(2, len, AC.sampleRate);
-    for (var ch = 0; ch < 2; ch++){ var dd = buf.getChannelData(ch); for (var i = 0; i < len; i++) dd[i] = (Math.random()*2 - 1)*Math.pow(1 - i/len, 2.4); }
-    conv.buffer = buf; var wet = AC.createGain(); wet.gain.value = .6; var dry = AC.createGain(); dry.gain.value = .4;
-    master.connect(lp); lp.connect(dry); lp.connect(conv); conv.connect(wet); dry.connect(AC.destination); wet.connect(AC.destination);
-    bus = AC.createConstantSource(); bus.offset.value = 0; bus.start(); return true; }
-  function osc(type, f, t0, t1, out, g){ var o = AC.createOscillator(); o.type = type; o.frequency.value = f; bus.connect(o.detune); var a = AC.createGain(); a.gain.value = g; o.connect(a); a.connect(out); o.start(t0); o.stop(t1); return o; }
-  function hz(e, s){ return e.root*Math.pow(2, s/12); }
-  function audioStart(){
-    try {
-      if (!AC && !makeCtx()) return; if (AC.state === 'suspended') AC.resume();
-      audioStopNow();
-      var e = EDITIONS[ed], t = AC.currentTime, L = layer = {duck:AC.createGain(), nodes:[]}; L.duck.gain.value = 0; L.duck.connect(master);
-      master.gain.cancelScheduledValues(t); master.gain.setTargetAtTime(+$('vol').value*.5, t, .8);
-      var sub = osc('sine', e.root/2, t, t + 3600, L.duck, .22), lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = .07; lg.gain.value = .08; lfo.connect(lg); lg.connect(sub.detune); lfo.start(); L.nodes.push(sub, lfo);
-      if (e.waves > 0){ var nb = AC.createBuffer(1, AC.sampleRate*3, AC.sampleRate), nd = nb.getChannelData(0), lst = 0;
-        for (var i = 0; i < nd.length; i++){ lst = (lst + .02*(Math.random()*2 - 1))/1.02; nd[i] = lst*3.5; }
-        var ns = AC.createBufferSource(); ns.buffer = nb; ns.loop = true; bus.connect(ns.detune);
-        var bp = AC.createBiquadFilter(); bp.type = 'lowpass'; bp.frequency.value = 700; var ng = AC.createGain(); ng.gain.value = .12*e.waves;
-        var tl = AC.createOscillator(), tg = AC.createGain(); tl.frequency.value = .09; tg.gain.value = .1*e.waves; tl.connect(tg); tg.connect(ng.gain); tl.start();
-        ns.connect(bp); bp.connect(ng); ng.connect(L.duck); ns.start(); L.nodes.push(ns, tl); }
-      function pad(){ var t0 = AC.currentTime, g = AC.createGain(); g.gain.value = 0; g.connect(L.duck);
-        var a = e.scale[(Math.random()*4)|0], ch = [a, a + 7, a + 12 + (Math.random() < .5 ? 4 : 3)];
-        ch.forEach(function(s, k){ osc(e.pad, hz(e, s), t0, t0 + 10, g, k ? .08 : .16); osc('sine', hz(e, s)*1.003, t0, t0 + 10, g, .06); });
-        g.gain.linearRampToValueAtTime(.5, t0 + 3); g.gain.setTargetAtTime(0, t0 + 5.5, 1.5); }
-      function bell(){ if (Math.random() > e.bells) return; var t0 = AC.currentTime, s = e.scale[(Math.random()*e.scale.length)|0] + 12, f = hz(e, s), g = AC.createGain(); g.gain.value = 0; g.connect(L.duck);
-        var car = osc(e.pad === 'triangle' ? 'triangle' : 'sine', f, t0, t0 + 4, g, .9);
-        var mod = AC.createOscillator(), mg = AC.createGain(); mod.frequency.value = f*(e.pad === 'triangle' ? 4 : 3.5); mg.gain.value = f*.9; mod.connect(mg); mg.connect(car.frequency); bus.connect(mod.detune); mod.start(t0); mod.stop(t0 + 4);
-        mg.gain.setTargetAtTime(0, t0, .25); g.gain.linearRampToValueAtTime(.09, t0 + .01); g.gain.setTargetAtTime(0, t0 + .02, e.pad === 'triangle' ? .35 : .9); }
-      pad(); timers.push(setInterval(pad, 5200)); timers.push(setInterval(bell, e.rate/2));
-    } catch (err) { $('rstatus').textContent = 'Playing · sound unavailable in this browser'; }
-  }
-  function audioStopNow(){ timers.forEach(clearInterval); timers = []; if (layer){ var L = layer; layer = null; try { L.duck.gain.setTargetAtTime(0, AC.currentTime, .3); setTimeout(function(){ L.nodes.forEach(function(n){ try { n.stop(); } catch (_) {} }); L.duck.disconnect(); }, 1500); } catch (_) {} } }
-  function audioStop(){ if (!AC) return; timers.forEach(clearInterval); timers = []; var L = layer; setTimeout(function(){ if (!docked && layer === L && L){ L.nodes.forEach(function(n){ try { n.stop(); } catch (_) {} }); try { L.duck.disconnect(); } catch (_) {} layer = null; } }, 2600); }
-  $('vol').addEventListener('input', function(){ if (AC && master && docked) master.gain.setTargetAtTime(+$('vol').value*.5, AC.currentTime, .1); });
-  function enterRadio(){ $('crate').querySelectorAll('.sl').forEach(function(b, i){ paint(b.querySelector('canvas'), edArt(EDITIONS[i])); }); drawRadioArt(); placeRecord(false); setEdition(ed); }
-  setEdition(0);
-
   /* ---------- journal ---------- */
   var topic = 'All';
   var TOPICS = ['All'].concat(POSTS.map(function(p){ return p.tag; }).filter(function(t, i, a){ return a.indexOf(t) === i; }));
@@ -392,151 +276,6 @@ import { Covers } from './covers.js';
     });
     var more = POSTS.filter(function(x){ return x.id !== id; }).slice(0, 3); $('postMore').innerHTML = more.map(postCard).join(''); after(function(){ paintPosts($('postMore'), more); });
   }
-
-  /* ---------- suggest: sketch pad, uploads, submissions, studio inbox ---------- */
-  var SG = {db:null, assets:null, user:null, uid:null, canWrite:null, owner:false, ready:false, reviews:{}, mine:[], all:[], filter:'All', started:false, files:[], tab:'sketch'};
-  var STATUSES = ['New', 'Shortlisted', 'In talks', 'Declined'];
-  var PAPER = '#f6f5f9', INK = '#221b29', RED = '#e9553a';
-  var sk = {cv:$('skCv'), strokes:[], cur:null, tool:'ink', size:4, trace:null};
-  sk.ctx = sk.cv.getContext('2d');
-  function skDraw(){
-    var x = sk.ctx, W = sk.cv.width, H = sk.cv.height;
-    x.globalAlpha = 1; x.fillStyle = PAPER; x.fillRect(0, 0, W, H);
-    x.fillStyle = 'rgba(34,27,41,.12)'; for (var gx = 30; gx < W; gx += 30) for (var gy = 30; gy < H; gy += 30) x.fillRect(gx, gy, 2, 2);
-    if (sk.trace){ var s = Math.min(W, H)*.9; x.globalAlpha = .22; x.drawImage(sk.trace, (W - s)/2, (H - s)/2, s, s); x.globalAlpha = 1; }
-    sk.strokes.forEach(stroke);
-    if (sk.cur) stroke(sk.cur);
-  }
-  function stroke(s){ var x = sk.ctx, p = s.pts; if (!p.length) return;
-    x.strokeStyle = s.tool === 'red' ? RED : s.tool === 'erase' ? PAPER : INK; x.lineWidth = s.tool === 'erase' ? s.size*4 : s.size; x.lineCap = x.lineJoin = 'round';
-    x.beginPath(); x.moveTo(p[0][0], p[0][1]); for (var i = 1; i < p.length; i++) x.lineTo(p[i][0], p[i][1]); if (p.length === 1) x.lineTo(p[0][0] + .1, p[0][1]); x.stroke(); }
-  function skPt(e){ var r = sk.cv.getBoundingClientRect(); return [(e.clientX - r.left)/r.width*sk.cv.width, (e.clientY - r.top)/r.height*sk.cv.height]; }
-  sk.cv.addEventListener('pointerdown', function(e){ e.preventDefault(); sk.cur = {tool:sk.tool, size:sk.size, pts:[skPt(e)]}; try { sk.cv.setPointerCapture(e.pointerId); } catch (_) {} skDraw(); });
-  sk.cv.addEventListener('pointermove', function(e){ if (!sk.cur) return; sk.cur.pts.push(skPt(e)); skDraw(); });
-  function skUp(){ if (!sk.cur) return; sk.strokes.push(sk.cur); sk.cur = null; skDraw(); }
-  sk.cv.addEventListener('pointerup', skUp); sk.cv.addEventListener('pointercancel', skUp);
-  document.querySelectorAll('[data-tool]').forEach(function(b){ b.onclick = function(){ sk.tool = b.dataset.tool; document.querySelectorAll('[data-tool]').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); }; });
-  $('skSize').addEventListener('input', function(){ sk.size = +$('skSize').value; });
-  $('skUndo').onclick = function(){ sk.strokes.pop(); skDraw(); };
-  $('skClear').onclick = function(){ sk.strokes = []; skDraw(); };
-  if (GL) PRODUCTS.forEach(function(p){ var o = document.createElement('option'); o.value = p.id; o.textContent = 'Over the ' + p.name; $('skTrace').appendChild(o); });
-  else { $('skTrace').hidden = true; document.querySelector('label[for=skTrace]').hidden = true; }
-  $('skTrace').addEventListener('change', function(){
-    var id = $('skTrace').value; if (!id){ sk.trace = null; skDraw(); return; }
-    snapLater(id, {w:900, h:900, wire:true}, function(u){ if (!u) return; var im = new Image(); im.onload = function(){ sk.trace = im; skDraw(); }; im.src = u; });
-  });
-  skDraw();
-
-  function sgTab(t){ SG.tab = t; $('sgSketchTab').setAttribute('aria-pressed', t === 'sketch'); $('sgUploadTab').setAttribute('aria-pressed', t === 'upload'); $('sgSketch').hidden = t !== 'sketch'; $('sgUpload').hidden = t !== 'upload';
-    $('sgHint').textContent = t === 'sketch' ? 'Draw with a mouse, pen or finger' : (SG.assets ? 'Up to 5 files' : 'Uploads need studio access on this link'); }
-  $('sgSketchTab').onclick = function(){ sgTab('sketch'); }; $('sgUploadTab').onclick = function(){ sgTab('upload'); };
-  var OK_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'application/pdf'];
-  function addFiles(list){
-    var msg = '';
-    Array.prototype.forEach.call(list, function(f){
-      if (SG.files.length >= 5){ msg = 'You can send up to 5 files.'; return; }
-      if (OK_TYPES.indexOf(f.type) < 0){ msg = f.name + ' isn\'t a supported type. Use PNG, JPG, WebP, GIF or PDF.'; return; }
-      if (f.size > 20*1024*1024){ msg = f.name + ' is over 20 MB.'; return; }
-      SG.files.push(f);
-    });
-    renderFiles(); if (msg) $('sgNote').textContent = msg;
-  }
-  function renderFiles(){ $('fileList').innerHTML = SG.files.map(function(f, i){ return '<li><span>' + esc(f.name) + ' <span class="small">· ' + (f.size/1048576).toFixed(1) + ' MB</span></span><button class="link" type="button" data-rmf="' + i + '">Remove</button></li>'; }).join(''); }
-  $('fileList').addEventListener('click', function(e){ var b = e.target.closest('[data-rmf]'); if (b){ SG.files.splice(+b.dataset.rmf, 1); renderFiles(); } });
-  $('sgFiles').addEventListener('change', function(){ addFiles($('sgFiles').files); $('sgFiles').value = ''; });
-  var drop = $('drop');
-  ['dragenter', 'dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
-  ['dragleave', 'drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
-  drop.addEventListener('drop', function(e){ if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
-
-  // connect to the page's store; everything above works without it
-  function connect(){
-    if (SG.started) return; SG.started = true;
-    var c = window.claude; if (!c || !c.use){ sgState(); return; }
-    Promise.all([c.use('db'), c.use('assets'), c.use('user')]).then(function(r){
-      SG.db = r[0]; SG.assets = r[1]; SG.user = r[2];
-      if (!SG.db || !SG.user){ sgState(); return; }
-      return Promise.all([SG.user.id(), SG.user.can('data.write'), SG.user.isOwner(), SG.user.canEdit()]).then(function(v){
-        SG.uid = v[0]; SG.canWrite = v[1]; SG.owner = !!(v[2] || v[3]); SG.ready = true; sgState(); listen();
-      });
-    }).catch(function(){ sgState(); });
-  }
-  function sgState(){
-    var b = $('sgSend');
-    if (!SG.ready || !SG.uid || SG.canWrite === false){ b.textContent = 'Send to the studio'; }
-    if (SG.tab === 'upload') sgTab('upload');
-  }
-  function listen(){
-    var loadT = setTimeout(function(){ if (!SG.mine.length) $('sgNote').textContent = $('sgNote').textContent || ''; }, 10000);
-    SG.db.collection('reviews').onSnapshot(function(s){ SG.reviews = {}; s.docs.forEach(function(d){ SG.reviews[d.id] = d.data().status; }); renderMine(); renderInbox(); }, function(){});
-    if (SG.uid) SG.db.doc('suggestions/' + SG.uid).onSnapshot(function(d){ clearTimeout(loadT); SG.mine = d.exists ? (d.data().items || []) : []; renderMine(); }, function(){});
-    if (SG.owner) SG.db.collection('suggestions').onSnapshot(function(s){
-      var all = []; s.docs.forEach(function(d){ (d.data().items || []).forEach(function(it){ all.push(it); }); });
-      all.sort(function(a, b){ return a.createdAt < b.createdAt ? 1 : -1; }); SG.all = all; renderInbox();
-    }, function(){});
-  }
-  function thumbSrc(sketch){ if (!sketch) return null; return sketch.asset ? '/_blob/' + sketch.asset : sketch.data || null; }
-  function subCard(it, inbox){
-    var st = SG.reviews[it.id] || 'New', src = thumbSrc(it.sketch);
-    var files = (it.files || []).map(function(f){ return '<a class="link" href="/_blob/' + esc(f.asset) + '" target="_blank" rel="noopener">' + esc(f.name) + '</a>'; }).join(' · ');
-    return '<article class="sub"><div class="plate clean sthumb">' + (src ? '<img alt="Sketch for ' + esc(it.title) + '" src="' + esc(src) + '">' : '<span class="small">No sketch</span>') + '</div>'
-      + '<div class="sbody"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="mono">' + esc(it.cat) + ' · ' + new Date(it.createdAt).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) + '</span><span class="st ' + (st === 'Shortlisted' || st === 'In talks' ? 'live' : '') + '">' + esc(st) + '</span></div>'
-      + '<b>' + esc(it.title) + '</b><p class="small" style="font-size:14px">' + esc(it.desc) + '</p>'
-      + (it.materials ? '<span class="small">Materials: ' + esc(it.materials) + '</span>' : '')
-      + (files ? '<span class="small">Files: ' + files + '</span>' : '')
-      + (inbox ? '<span class="small">From ' + esc(it.name) + ' · <span style="user-select:all">' + esc(it.contact) + '</span></span><label class="lab" for="st-' + esc(it.id) + '">Status</label><select id="st-' + esc(it.id) + '" data-review="' + esc(it.id) + '">' + STATUSES.map(function(s){ return '<option' + (s === st ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' : '')
-      + '</div></article>';
-  }
-  function renderMine(){ $('mineSec').hidden = !SG.mine.length; $('mine').innerHTML = SG.mine.map(function(it){ return subCard(it, false); }).join(''); }
-  function renderInbox(){
-    if (!SG.owner){ $('inboxSec').hidden = true; return; }
-    $('inboxSec').hidden = false;
-    var counts = {All:SG.all.length}; STATUSES.forEach(function(s){ counts[s] = 0; }); SG.all.forEach(function(it){ counts[SG.reviews[it.id] || 'New']++; });
-    $('inboxFilter').innerHTML = ['All'].concat(STATUSES).map(function(s){ return '<button class="chip" type="button" data-sf="' + s + '" aria-pressed="' + (s === SG.filter) + '">' + s + ' · ' + counts[s] + '</button>'; }).join('');
-    var L = SG.all.filter(function(it){ return SG.filter === 'All' || (SG.reviews[it.id] || 'New') === SG.filter; });
-    $('inboxCount').textContent = SG.all.length ? SG.all.length + (SG.all.length === 1 ? ' submission so far.' : ' submissions so far.') : 'Nothing yet. New submissions appear here as they arrive.';
-    $('inbox').innerHTML = L.map(function(it){ return subCard(it, true); }).join('');
-  }
-  $('inboxFilter').addEventListener('click', function(e){ var b = e.target.closest('[data-sf]'); if (b){ SG.filter = b.dataset.sf; renderInbox(); } });
-  $('inbox').addEventListener('change', function(e){ var s = e.target.closest('[data-review]'); if (!s || !SG.db) return;
-    SG.db.doc('reviews/' + s.dataset.review).set({status:s.value, at:new Date().toISOString()}).then(function(){ toast('Marked ' + s.value); }, function(){ toast('Couldn\'t save that status'); }); });
-
-  function blobOf(cv, type, q){ return new Promise(function(res){ cv.toBlob(res, type, q); }); }
-  $('sgForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    var f = {title:$('sgTitle').value.trim(), cat:$('sgCat').value, materials:$('sgMat').value.trim(), desc:$('sgDesc').value.trim(), name:$('sgName').value.trim(), contact:$('sgContact').value.trim()};
-    var miss = [];
-    if (!f.title) miss.push('a design name'); if (!f.desc) miss.push('a description'); if (!f.name) miss.push('your name'); if (!f.contact) miss.push('an email or Instagram');
-    if (!sk.strokes.length && !SG.files.length) miss.push('a sketch or a file');
-    if (!$('sgOwn').checked || !$('sgTerms').checked) miss.push('both checkboxes');
-    if (miss.length){ $('sgNote').textContent = 'Add ' + miss.join(', ') + ' before sending.'; return; }
-    if (!SG.ready || !SG.uid || SG.canWrite === false){ $('sgNote').textContent = 'Submissions aren\'t open yet, so nothing was sent. The open call starts with Collection 001.'; return; }
-    if (SG.files.length && !SG.assets){ $('sgNote').textContent = 'File uploads need studio access on this link. Remove the files and send the sketch, or try again later.'; return; }
-    var btn = $('sgSend'); btn.disabled = true; btn.textContent = 'Sending…'; $('sgNote').textContent = '';
-    var id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8), item = Object.assign({id:id, createdAt:new Date().toISOString(), sketch:null, files:[]}, f);
-    var chain = Promise.resolve();
-    if (sk.strokes.length){
-      chain = chain.then(function(){
-        if (SG.assets) return blobOf(sk.cv, 'image/png').then(function(b){ return SG.assets.upload(b, {type:'image/png'}); }).then(function(r){ item.sketch = {asset:r.id}; });
-        var small = document.createElement('canvas'); small.width = 800; small.height = 600; small.getContext('2d').drawImage(sk.cv, 0, 0, 800, 600);
-        var d = small.toDataURL('image/jpeg', .72); if (d.length < 200000) item.sketch = {data:d};
-      });
-    }
-    SG.files.forEach(function(file){ chain = chain.then(function(){ return SG.assets.upload(file, {type:file.type}).then(function(r){ item.files.push({asset:r.id, name:file.name, type:r.contentType, size:r.sizeBytes}); }); }); });
-    chain.then(function(){
-      var ref = SG.db.doc('suggestions/' + SG.uid);
-      return ref.get().then(function(d){ var items = d.exists ? (d.data().items || []).slice() : []; items.unshift(item); return ref.set({items:items, updatedAt:item.createdAt}); });
-    }).then(function(){
-      $('sgForm').reset(); sk.strokes = []; skDraw(); SG.files = []; renderFiles();
-      $('sgNote').textContent = 'Sent. We review submissions once a month and reply within 30 days if we\'d like to develop yours.';
-      toast('Sent to the studio');
-    }).catch(function(err){
-      var c = err && err.code;
-      $('sgNote').textContent = c === 'too_large' ? 'One of the files is too large. Keep each under 20 MB.' : c === 'unsupported_type' ? 'One of the files isn\'t a supported type.' : c === 'quota_exceeded' || c === 'quota_or_state' ? 'The studio inbox is full right now. Try again later.' : c === 'invalid_argument' ? 'Submissions aren\'t open yet, so nothing was sent.' : 'Something went wrong while sending. Your sketch and details are still here, so try again.';
-    }).then(function(){ btn.disabled = false; btn.textContent = 'Send to the studio'; });
-  });
-  function enterSuggest(){ connect(); skDraw(); }
-  connect();
 
   /* ---------- spinning chrome petal mark (footer) ---------- */
   (function(){
@@ -576,19 +315,27 @@ import { Covers } from './covers.js';
     requestAnimationFrame(frame);
   })();
 
+  /* ---------- outside links: KRAM Radio lives on Spotify ---------- */
+  document.querySelectorAll('[data-link]').forEach(function(el){
+    var url = LINKS[el.dataset.link];
+    if (url){ el.href = url; return; }
+    el.removeAttribute('href'); el.removeAttribute('target'); el.setAttribute('aria-disabled', 'true');
+    el.classList.add('soon'); if (el.classList.contains('spotify')) el.textContent = 'KRAM Radio on Spotify · coming soon';
+    else { var s = el.querySelector('.small'); if (s) s.textContent = 'A new playlist every two weeks · coming soon'; }
+  });
+
   /* ---------- router ---------- */
   var page = null, prevPage = null;
   function route(){
     var h = (location.hash || '').slice(1), next = 'home', arg = null, toShop = h === 'shop';
     if (h.indexOf('product-') === 0){ next = 'product'; arg = h.slice(8); }
     else if (h.indexOf('post-') === 0){ next = 'post'; arg = h.slice(5); }
-    else if (h === 'radio' || h === 'journal' || h === 'about' || h === 'suggest' || h === 'cart') next = h;
-    if (page === 'radio' && next !== 'radio' && docked) setDocked(false);
+    else if (h === 'journal' || h === 'about' || h === 'cart') next = h;
     Viewer.unmount();
     document.querySelectorAll('[data-page]').forEach(function(el){ el.hidden = el.dataset.page !== next; });
     document.querySelectorAll('[data-nav]').forEach(function(a){ var on = a.dataset.nav === next || (next === 'product' && a.dataset.nav === 'home') || (next === 'post' && a.dataset.nav === 'journal'); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     var prev = page; prevPage = prev; page = next; closeMini();
-    if (next === 'home') enterHome(); else if (next === 'product') enterProduct(arg); else if (next === 'radio') enterRadio(); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'suggest') enterSuggest(); else if (next === 'cart') renderCartPage();
+    if (next === 'home') enterHome(); else if (next === 'product') enterProduct(arg); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'cart') renderCartPage();
     paint($('footCv'), {layout:'scatter', count:9, seed:90, size:1.1});
     // a fresh load or refresh always opens at the top; only a click on Shop scrolls down to the grid
     // Shop and the logo always land at the top of the shop page
@@ -603,7 +350,6 @@ import { Covers } from './covers.js';
   function toTop(){ window.scrollTo({top:0, behavior: RM || document.visibilityState !== 'visible' ? 'auto' : 'smooth'}); }
   var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){
     if (page === 'home'){ KS.fit(hc, 1.25); if (view === 'grid') paintCards($('grid')); }
-    if (page === 'radio'){ enterRadio(); }
     paint($('footCv'), {layout:'scatter', count:9, seed:90, size:1.1});
   }, 180); });
   renderCart(); route();

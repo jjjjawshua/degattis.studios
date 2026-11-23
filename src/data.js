@@ -130,13 +130,16 @@ var POSTS = [
      {p:'Aluminium covers the light parts: the key tag and the carabiner, where weight matters more than wear. Each material takes the vermilion anodising differently, which is the next thing to test.'}
    ]},
   {id:'building-radio', words:['Ambient', 'Environmental', 'Electronic', 'Every two weeks', '4 December', 'Eight tracks', 'The crate', 'The deck', '33⅓', '45', 'Scratch', 'Spotify', 'Low Tide Hours', 'Machine Garden', 'Fog Index'], title:'Building KRAM Radio', tag:'Radio', date:'14 Nov 2026', art:{palette:'dawn', layout:'grid', count:9, seed:3, streak:.45},
-   dek:'A new playlist every two weeks, and a record you can put on.',
+   dek:'A new playlist every two weeks, on Spotify.',
    body:[
      {p:'KRAM Radio is the sound around the objects: ambient, environmental and electronic music that sits well together. A new edition goes up every two weeks, starting 4 December.'},
      {art:{palette:'halo', layout:'orbit', count:7, seed:3, streak:.2, edge:0}, cap:'Each edition gets its own record artwork from the same renderer as the covers.'},
-     {p:'On the site you can pull any edition from the crate and put it on the deck. Playlists open in Spotify once they are published.'}
+     {p:'The playlists live on Spotify under KRAM Radio. Follow along there; the link is at the bottom of every page.'}
    ]}
 ];
 function post(id){ for(var i=0;i<POSTS.length;i++) if(POSTS[i].id===id) return POSTS[i]; return null; }
 
-export { CATS, FINISHES, METAL, PRODUCTS, product, EDITIONS, POSTS, post };
+/* Outside links. Paste the KRAM Radio Spotify profile or playlist URL here; until then the site says "coming soon". */
+var LINKS = { spotify: '' };
+
+export { CATS, FINISHES, METAL, PRODUCTS, product, EDITIONS, POSTS, post, LINKS };

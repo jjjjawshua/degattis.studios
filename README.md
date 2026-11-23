@@ -1,6 +1,6 @@
 # kram.
 
-Site for **kram.**, a studio making metal objects with one vermilion part, plus KRAM Radio, a journal and an open call for designs.
+Site for **kram.**, a studio making metal objects with one vermilion part, with a journal and a link to KRAM Radio on Spotify.
 
 ## Run it
 
@@ -19,10 +19,9 @@ The build is a plain static site (`base: './'`), so `dist/` can go on any static
 | --- | --- | --- |
 | Shop | `#shop` | Hero, then 30 objects in a grid (hover for details) or one by one in live 3D |
 | Product | `#product-<id>` | Renders, live 3D with finishes, specs, add to cart, close-ups on scroll |
-| Radio | `#radio` | The crate of editions, a deck with generated sound and scratching |
 | Journal | `#journal`, `#post-<id>` | Posts with generative covers, newsletter sign-up |
-| Suggest | `#suggest` | Sketch pad, file uploads, submission form, draft 50/50 terms |
 | About | `#about` | Studio, process, socials |
+| Cart | `#cart` | Cart page; the header Cart (n) opens a dropdown |
 
 Two studio tools ship as standalone pages in `public/tools/`: the visual direction board and the Radio cover generator.
 
@@ -32,8 +31,8 @@ Two studio tools ship as standalone pages in `public/tools/`: the visual directi
 index.html          markup for every page (hash-routed)
 src/main.js         entry: styles + app
 src/styles.css      all styles; tokens at the top (Halo paper, plum ink, vermilion)
-src/app.js          router, shop views, product page, cart, Radio deck, journal, Suggest, footer mark
-src/data.js         catalogue (PRODUCTS), Radio EDITIONS, journal POSTS
+src/app.js          router, shop views, product page, cart, journal, outside links, footer mark
+src/data.js         catalogue (PRODUCTS), journal POSTS, outside LINKS
 src/viewer.js       one shared three.js renderer: product models, finishes, snapshots
 src/covers.js       generative journal covers
 src/spectral.js     the frosted reeded-glass artwork renderer
@@ -46,8 +45,7 @@ three.js is pinned to `0.128.0`, the version the models and materials were tuned
 ## Not connected yet
 
 - **Checkout.** The cart works and is saved in the browser; checkout shows a message. Next step: Shopify Storefront API or Stripe Checkout.
-- **Spotify.** Each Radio edition has an "Open in Spotify" button waiting for a playlist URL in `EDITIONS`.
-- **Suggest submissions.** The prototype saved these to its artifact database; on this site the form validates and then says submissions aren't open. Next step: a small backend (for example Supabase or a form service) for the form, sketches and uploads.
+- **KRAM Radio.** Lives on Spotify. Paste the profile or playlist URL into `LINKS.spotify` in `src/data.js`; until then the footer and About page say "coming soon". Covers can be made with `public/tools/radio-covers.html`.
 - **Newsletter.** The form validates but sends nothing.
 - **Socials.** Handles on the About page are placeholders.
 - **Product photos and specs.** Images are 3D renders; names, prices and specs are concepts.
