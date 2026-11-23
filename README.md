@@ -1,6 +1,6 @@
 # degattis studios
 
-Site for **degattis studios**, a studio making metal objects with one vermilion part, with a journal and a link to degattis radio on Spotify.
+Site for **degattis studios**, a studio making metal objects with one cobalt part, with a journal and a link to degattis radio on Spotify.
 
 ## Run it
 
@@ -17,7 +17,7 @@ The build is a plain static site (`base: './'`), so `dist/` can go on any static
 
 | Page | Hash | What it does |
 | --- | --- | --- |
-| Home | `#` | The degattis studios logo (`public/brand/degattis-logo.webp`) behind the frosted glass fills the screen |
+| Home | `#` | "degattis studios" in white over the frosted Echo-palette artwork fills the screen |
 | Shop | `#shop`, `#shop-<category>` | 30 objects in a gallery by category; hover a tile for a second angle; side links open it filtered |
 | Product | `#product-<id>` | Name, price, finish, size, add to cart and details; renders or live 3D, close-ups on scroll |
 | Journal | `#journal`, `#post-<id>` | Posts with generative covers |
@@ -35,7 +35,7 @@ Two studio tools ship as standalone pages in `public/tools/`: the visual directi
 ```
 index.html          markup for every page (hash-routed)
 src/main.js         entry: styles + app
-src/styles.css      all styles; tokens at the top (Halo paper, plum ink, vermilion)
+src/styles.css      all styles; tokens at the top (Echo paper, near-black ink, cobalt)
 src/app.js          router, shop views, product page, cart, journal, outside links, side column, chrome mark
 src/data.js         catalogue (PRODUCTS), journal POSTS, outside LINKS
 src/viewer.js       one shared three.js renderer: product models, finishes, snapshots

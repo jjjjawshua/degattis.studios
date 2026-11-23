@@ -126,13 +126,8 @@ import { Covers } from './covers.js';
   function paintPosts(root, L){ root.querySelectorAll('.pcard').forEach(function(c, i){ cover(c.querySelector('canvas'), L[i]); }); }
 
   // hero
-  // the logo is painted into the colour field, so it blurs and smears exactly like the shapes around it
-  var heroLogo = new Image(), logoAt = {img:heroLogo, cx:.5, cy:.44, w:.86, h:.56, parts:[{y0:0, y1:.7, soft:.3}, {y0:.7, y1:1, soft:.14}]};
-  var hc = $('heroCv'), hero = KS.create(hc, {layout:'ring', count:9, seed:4, size:1.2, spread:1.1, cx:.5, cy:.46, spin:.00005});
-  function placeLogo(){ var wide = hc.clientWidth > hc.clientHeight; logoAt.w = wide ? .86 : .94; logoAt.cy = wide ? .44 : .42; hero.set({under: Object.assign({}, logoAt)}); }
-  heroLogo.onload = function(){ placeLogo(); if (page === 'home') hero.render(0); };
-  heroLogo.src = './brand/degattis-logo.webp';
-  var ptr = {x:.5, y:.46, s:0}, tgt = {x:.5, y:.46, s:0}, heroOn = true, last = 0;
+  var hc = $('heroCv'), hero = KS.create(hc, {palette:'echo', layout:'ring', count:9, seed:4, size:1.2, spread:1.1, cx:.6, cy:.5, spin:.00005});
+  var ptr = {x:.6, y:.5, s:0}, tgt = {x:.6, y:.5, s:0}, heroOn = true, last = 0;
   hc.addEventListener('pointermove', function(e){ var r = hc.getBoundingClientRect(); tgt.x = (e.clientX - r.left) / r.width; tgt.y = (e.clientY - r.top) / r.height; tgt.s = 1; });
   hc.addEventListener('pointerleave', function(){ tgt.s = 0; });
   if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ heroOn = es[0].isIntersecting; }).observe(hc);
@@ -146,7 +141,7 @@ import { Covers } from './covers.js';
   requestAnimationFrame(heroFrame);
 
   // the footer mark lines up under "Shop the collection": its column takes the button's width (and, on phones, its left edge)
-  function enterHome(){ after(function(){ KS.fit(hc, 1.25); placeLogo(); hero.render(0); }); }
+  function enterHome(){ after(function(){ KS.fit(hc, 1.25); hero.render(0); }); }
 
   /* ---------- product page: big still or live 3D on the left, details on the right, more views on scroll ---------- */
   var cur = null, curFinish = 'polished', curSize = null, mediaMode = 'images';
@@ -165,7 +160,7 @@ import { Covers } from './covers.js';
   }
   // scrolling down shows the object large and close up, one angle after another
   function renderDetails(){
-    var p = cur, D = [{ay:.85, ax:-.3, dist:10.5, cap:'Three-quarter'}, {ay:1.5, ax:-.05, dist:8, cap:'Profile'}, {detail:true, cap:'The vermilion part'}, {ax:-1.15, ay:.3, dist:9, cap:'From above'}, {ay:-.6, ax:.35, dist:7, cap:'Edge and finish'}];
+    var p = cur, D = [{ay:.85, ax:-.3, dist:10.5, cap:'Three-quarter'}, {ay:1.5, ax:-.05, dist:8, cap:'Profile'}, {detail:true, cap:'The cobalt part'}, {ax:-1.15, ay:.3, dist:9, cap:'From above'}, {ay:-.6, ax:.35, dist:7, cap:'Edge and finish'}];
     $('pDetails').innerHTML = D.map(function(d, i){ return '<figure class="dfig"><div class="plate clean"><img class="snap" alt="' + esc(p.name + ', ' + d.cap.toLowerCase()) + '" hidden></div></figure>'; }).join('');
     after(function(){ $('pDetails').querySelectorAll('.dfig').forEach(function(f, i){ var o = Object.assign({w:1300, h:1330, finish:curFinish}, D[i]); delete o.cap; if (window.innerWidth < 600){ o.w = 800; o.h = 820; } fillImg(f.querySelector('img'), p.id, o); }); });
   }
@@ -324,7 +319,7 @@ import { Covers } from './covers.js';
   // smooth where it can animate; instant with reduced motion or in a background tab
   function toTop(){ window.scrollTo({top:0, behavior: RM || document.visibilityState !== 'visible' ? 'auto' : 'smooth'}); }
   var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){
-    if (page === 'home'){ KS.fit(hc, 1.25); placeLogo(); }
+    if (page === 'home'){ KS.fit(hc, 1.25); }
     if (page === 'shop') paintCards($('grid'));
   }, 180); });
   renderCart(); route();

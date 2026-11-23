@@ -4,17 +4,17 @@ import { KramSpectral } from './spectral.js';
    scribble) x palettes x layout choices, seeded per post plus a per-visit salt so they reshuffle. */
 var Covers = (function(){
   var FONT = '"Inter Tight","Helvetica Neue",Arial,sans-serif';
-  // brand colours and neutrals only: Halo paper, plum ink, vermilion, lilac, stone, sand
+  // brand colours and neutrals only: Halo paper, plum ink, cobalt, lilac, stone, sand
   var PALS = {
-    stone:     {bg:'#d6d3da', a:'#221b29', big:'#e9553a', list:'#221b29', line:'#221b29', ink:'#221b29'},
-    paper:     {bg:'#f4f3f6', a:'#e9553a', big:'#221b29', list:'#221b29', line:'#e9553a', ink:'#221b29'},
-    plum:      {bg:'#221b29', a:'#e9553a', b:'#3a3142', big:'#ecebf0', list:'#cfcde0', line:'#6d4c7d', ink:'#ecebf0'},
-    halo:      {bg:'#ecebf0', a:'#6d4c7d', b:'#cfcde0', big:'#e9553a', list:'#221b29', line:'#6d4c7d', ink:'#221b29'},
-    vermilion: {bg:'#e9553a', a:'#221b29', big:'#ecebf0', list:'#221b29', line:'#221b29', ink:'#221b29'},
+    stone:     {bg:'#d6d3da', a:'#221b29', big:'#4a6ff0', list:'#221b29', line:'#221b29', ink:'#221b29'},
+    paper:     {bg:'#f4f3f6', a:'#4a6ff0', big:'#221b29', list:'#221b29', line:'#4a6ff0', ink:'#221b29'},
+    plum:      {bg:'#221b29', a:'#4a6ff0', b:'#3a3142', big:'#ecebf0', list:'#cfcde0', line:'#6d4c7d', ink:'#ecebf0'},
+    halo:      {bg:'#ecebf0', a:'#6d4c7d', b:'#cfcde0', big:'#4a6ff0', list:'#221b29', line:'#6d4c7d', ink:'#221b29'},
+    cobalt:    {bg:'#4a6ff0', a:'#221b29', big:'#ecebf0', list:'#221b29', line:'#221b29', ink:'#221b29'},
     sand:      {bg:'#cfccc6', a:'#221b29', big:'#6d4c7d', list:'#221b29', line:'#3a3340', ink:'#221b29'},
     lilac:     {bg:'#9e8fc4', a:'#221b29', big:'#ecebf0', list:'#221b29', line:'#ecebf0', ink:'#221b29'}
   };
-  var STYLES = {contour:['vermilion','sand','plum','halo','lilac'], maze:['stone','halo','sand'], dither:['halo','plum'], scribble:['paper','stone']};
+  var STYLES = {contour:['cobalt','sand','plum','halo','lilac'], maze:['stone','halo','sand'], dither:['halo','plum'], scribble:['paper','stone']};
   function hash(s){ var h = 2166136261; for (var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function noise(r){
     var N = 48, g = []; for (var i = 0; i < N*N; i++) g.push(r());

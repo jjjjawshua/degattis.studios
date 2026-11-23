@@ -39,9 +39,9 @@ var Viewer = (function(){
     blastTex = texCanvas(function(g){ var d = g.createImageData(512,512); for (var i = 0; i < d.data.length; i += 4){ var v = 110 + (r2()*90|0); d.data[i] = d.data[i+1] = d.data[i+2] = v; d.data[i+3] = 255; } g.putImageData(d,0,0); });
     brushTex.repeat.set(.5,.5);
     metal = new T.MeshPhysicalMaterial({color:0xf0f0f2, metalness:1, roughness:.09, envMapIntensity:1.3});
-    cobalt = new T.MeshPhysicalMaterial({color:0xe23f22, metalness:.05, roughness:.34, clearcoat:.55, clearcoatRoughness:.12, envMapIntensity:.22, emissive:0x6a1404, emissiveIntensity:.2});
-    cobalt.toneMapped = false; // the vermilion part keeps its true colour instead of being softened by tone mapping
-    slotM = new T.MeshStandardMaterial({color:0x3a0d06, metalness:.3, roughness:.55});
+    cobalt = new T.MeshPhysicalMaterial({color:0x1129df, metalness:.05, roughness:.34, clearcoat:.55, clearcoatRoughness:.12, envMapIntensity:.22, emissive:0x04126a, emissiveIntensity:.2});
+    cobalt.toneMapped = false; // the coloured part keeps its true colour instead of being softened by tone mapping
+    slotM = new T.MeshStandardMaterial({color:0x060c30, metalness:.3, roughness:.55});
     lineMat = new T.LineBasicMaterial({color:0x16181f});
     ok = true; return true;
   }
@@ -77,7 +77,7 @@ var Viewer = (function(){
       x.font = '700 ' + (w*.055) + 'px "Inter Tight", Arial, sans-serif'; x.fillText('degattis studios', w*.08, h*.12);
       x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = w*.006;
       for (var i = 0; i < 12; i++){ var cx = w*(.22 + (i%3)*.28), cy = h*(.27 + Math.floor(i/3)*.19); x.beginPath(); x.arc(cx, cy, w*.11, 0, Math.PI*2); x.stroke(); }
-      x.fillStyle = '#e9553a'; x.beginPath(); x.arc(w*.86, h*.93, w*.04, 0, Math.PI*2); x.fill();
+      x.fillStyle = '#4a6ff0'; x.beginPath(); x.arc(w*.86, h*.93, w*.04, 0, Math.PI*2); x.fill();
     }
     var t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4; return t;
   }
