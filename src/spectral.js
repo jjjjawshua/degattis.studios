@@ -203,13 +203,14 @@
     // laid in after the ribs so its letters stay level, then glazed by the same sheen, veil and grain.
     // under: {img, cx, cy, w, h, soft, parts}; w and h cap its size as fractions of the canvas;
     // soft (0-1) is its blur relative to the shapes' (1 = identical). parts: [{y0, y1, soft}] blurs
-    // horizontal bands of the image separately (y0/y1 as fractions of its height).
+    // horizontal bands of the image separately (y0/y1 as fractions of its height). blend picks the canvas
+    // composite mode (default multiply on light paper; 'source-over' keeps white parts white).
     var u = o.under;
     if (u && u.img && u.img.naturalWidth) {
       var ar = u.img.naturalWidth / u.img.naturalHeight, lw = Math.min(W * (u.w || 0.8), H * (u.h || 0.5) * ar), lh = lw / ar;
       var lx = (u.cx == null ? 0.5 : u.cx) * W - lw / 2, ly = (u.cy == null ? 0.5 : u.cy) * H - lh / 2;
       var parts = u.parts || [{ y0: 0, y1: 1, soft: u.soft }], iw = u.img.naturalWidth, ih = u.img.naturalHeight;
-      ctx.globalCompositeOperation = dark ? 'screen' : 'multiply'; ctx.globalAlpha = u.alpha == null ? 1 : u.alpha;
+      ctx.globalCompositeOperation = u.blend || (dark ? 'screen' : 'multiply'); ctx.globalAlpha = u.alpha == null ? 1 : u.alpha;
       for (var pi = 0; pi < parts.length; pi++) {
         var pt2 = parts[pi], sf = pt2.soft == null ? 1 : pt2.soft;
         var lds = Math.max(1, ds * sf), lbw = Math.max(4, Math.ceil(W / lds)), lbh = Math.max(3, Math.ceil(H / (lds * vy)));
