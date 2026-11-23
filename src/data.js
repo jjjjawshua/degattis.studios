@@ -139,7 +139,7 @@ var POSTS = [
 ];
 function post(id){ for(var i=0;i<POSTS.length;i++) if(POSTS[i].id===id) return POSTS[i]; return null; }
 
-/* Outside links. Paste the KRAM Radio Spotify profile or playlist URL here; until then the site says "coming soon". */
-var LINKS = { spotify: '' };
+/* Outside links. Paste the KRAM Radio Spotify URL and the Instagram profile URL here; until then the site says "coming soon". */
+var LINKS = { spotify: '', instagram: '' };
 
 export { CATS, FINISHES, METAL, PRODUCTS, product, EDITIONS, POSTS, post, LINKS };
