@@ -88,20 +88,17 @@ import { Covers } from './covers.js';
 
   /* ---------- product card ---------- */
   function card(p){
-    var d = document.createElement('div'); d.className = 'card'; d.dataset.id = p.id;
-    d.innerHTML = '<a class="cardlink" href="#product-' + p.id + '"><div class="plate clean"><img class="snap" alt="" hidden></div><div class="ov"><span class="mono">' + p.code + '</span><b>' + esc(p.name) + '</b><span class="price">' + money(p.price) + '</span><span class="small">' + esc(p.short) + '</span></div></a><button class="quick" type="button" data-add="' + p.id + '">Add to cart</button>';
-    d.querySelector('.snap').alt = p.name + ', ' + p.code + ', ' + money(p.price);
+    var d = document.createElement('div'); d.className = 'gcard'; d.dataset.id = p.id;
+    d.innerHTML = '<a class="gimg" href="#product-' + p.id + '" aria-label="' + esc(p.name + ', ' + money(p.price)) + '"><img class="snap a" alt="" hidden><img class="snap b" alt="" hidden></a>'
+      + '<div class="ginfo"><a class="gname" href="#product-' + p.id + '" tabindex="-1">' + esc(p.name) + '</a><button class="gadd" type="button" data-add="' + p.id + '" aria-label="Add ' + esc(p.name) + ' to cart">+</button><span class="gprice">' + money(p.price) + '</span></div>';
     return d;
   }
+  // first a straight-on render, then a closer second angle that shows on hover
   function paintCards(root){
-    root.querySelectorAll('.card').forEach(function(c){ fillImg(c.querySelector('.snap'), c.dataset.id, {w:640, h:640, dist:16.5}); });
+    var cs = root.querySelectorAll('.gcard');
+    cs.forEach(function(c){ fillImg(c.querySelector('.a'), c.dataset.id, {w:640, h:800, dist:16.5}); });
+    cs.forEach(function(c){ fillImg(c.querySelector('.b'), c.dataset.id, {w:640, h:800, ay:1.3, ax:-.4, dist:16.5}); });
   }
-  // touch screens have no hover: the first tap shows the details, the second opens the object
-  var touchOnly = window.matchMedia && window.matchMedia('(hover: none)').matches;
-  document.addEventListener('click', function(e){
-    if (!touchOnly) return; var l = e.target.closest('.cardlink'); if (!l) return; var c = l.parentNode;
-    if (!c.classList.contains('peek')){ e.preventDefault(); document.querySelectorAll('.card.peek').forEach(function(x){ x.classList.remove('peek'); }); c.classList.add('peek'); }
-  }, true);
 
   document.addEventListener('click', function(e){
     var b = e.target.closest('[data-add]'); if (!b) return;
@@ -110,49 +107,14 @@ import { Covers } from './covers.js';
   });
 
   /* ---------- home / shop ---------- */
-  var cat = 'all', view = 'grid';
-  CATS.forEach(function(c){ var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = c[1]; b.dataset.c = c[0]; b.onclick = function(){ cat = c[0]; renderShop(); }; $('catChips').appendChild(b); });
+  var cat = 'all';
+  CATS.forEach(function(c){ var b = document.createElement('button'); b.type = 'button'; b.textContent = c[1]; b.dataset.c = c[0]; b.onclick = function(){ cat = c[0]; renderShop(); }; $('catChips').appendChild(b); });
   function list(){ return PRODUCTS.filter(function(p){ return cat === 'all' || p.cat === cat; }); }
   function renderShop(){
     var L = list();
-    $('catChips').querySelectorAll('.chip').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.c === cat); });
-    $('shopCount').textContent = L.length + (L.length === 1 ? ' object' : ' objects');
-    $('viewGrid').setAttribute('aria-pressed', view === 'grid'); $('viewOne').setAttribute('aria-pressed', view === 'one');
-    $('grid').hidden = view !== 'grid'; $('oneWrap').hidden = view !== 'one';
-    if (view === 'grid'){ Viewer.unmount(); $('grid').innerHTML = ''; L.forEach(function(p){ $('grid').appendChild(card(p)); }); after(function(){ paintCards($('grid')); }); }
-    else buildSlides(L);
+    $('catChips').querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.c === cat); });
+    Viewer.unmount(); $('grid').innerHTML = ''; L.forEach(function(p){ $('grid').appendChild(card(p)); }); after(function(){ paintCards($('grid')); });
   }
-  $('viewGrid').onclick = function(){ view = 'grid'; renderShop(); };
-  $('viewOne').onclick = function(){ view = 'one'; renderShop(); };
-  $('shopCta').onclick = function(){ $('shopSec').scrollIntoView({behavior: RM ? 'auto' : 'smooth'}); };
-
-  var slideIO = null, activeSlide = -1, slideList = [];
-  function buildSlides(L){
-    slideList = L; var box = $('slides'); box.innerHTML = ''; activeSlide = -1;
-    L.forEach(function(p, i){
-      var s = document.createElement('div'); s.className = 'slide'; s.dataset.i = i;
-      s.innerHTML = '<div class="stage"><div class="plate clean"><img class="snap" alt="" hidden></div><div class="host stage3d" role="img" aria-label="' + esc(p.name) + ' in 3D. Drag to turn."></div><span class="mono hint">' + (GL ? 'Drag to turn' : 'Render') + '</span></div>'
-        + '<div class="info"><span class="mono">' + p.code + ' · ' + (i + 1) + ' of ' + L.length + '</span><a class="nm" href="#product-' + p.id + '">' + esc(p.name) + '</a><p class="desc">' + esc(p.copy) + '</p><span class="price" style="font-size:24px">' + money(p.price) + '</span><div class="chips"><button class="btn" type="button" data-add="' + p.id + '">Add to cart</button><a class="btn ghost" href="#product-' + p.id + '">Full details</a></div></div>';
-      box.appendChild(s);
-    });
-    if (slideIO) slideIO.disconnect();
-    slideIO = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) activate(+e.target.dataset.i); }); }, {root:box, threshold:.6});
-    after(function(){
-      box.querySelectorAll('.slide').forEach(function(s, i){ var p = L[i]; fillImg(s.querySelector('.snap'), p.id, {w:700, h:700}); slideIO.observe(s); });
-      box.scrollTop = 0; activate(0);
-    });
-  }
-  function activate(i){
-    if (i === activeSlide || !slideList[i]) return; activeSlide = i;
-    $('slCount').textContent = (i + 1) + ' / ' + slideList.length + ' · ' + slideList[i].name;
-    if (!GL) return;
-    var s = $('slides').children[i], host = s.querySelector('.host');
-    $('slides').querySelectorAll('.snap').forEach(function(im, k){ im.style.visibility = k === i ? 'hidden' : ''; });
-    Viewer.mount(host); Viewer.finish('polished'); Viewer.show(slideList[i].id);
-  }
-  function step(d){ var box = $('slides'), n = Math.max(0, Math.min(slideList.length - 1, activeSlide + d)); box.children[n].scrollIntoView({behavior: RM ? 'auto' : 'smooth', block:'nearest'}); }
-  $('slPrev').onclick = function(){ step(-1); }; $('slNext').onclick = function(){ step(1); };
-  $('slides').addEventListener('keydown', function(e){ if (e.key === 'ArrowDown' || e.key === 'ArrowRight'){ e.preventDefault(); step(1); } if (e.key === 'ArrowUp' || e.key === 'ArrowLeft'){ e.preventDefault(); step(-1); } });
 
   function postCard(p){ return '<a class="pcard" href="#post-' + p.id + '"><div class="plate">' + plateHTML() + '</div><div style="display:flex;justify-content:space-between;gap:8px"><span class="mono">' + esc(p.tag) + ' · ' + esc(p.date) + '</span><span class="mono" style="color:var(--accent)">Draft</span></div><b>' + esc(p.title) + '</b><span class="small">' + esc(p.dek) + '</span></a>'; }
   var coverSalt = (Math.random()*1e6)|0;
@@ -175,31 +137,29 @@ import { Covers } from './covers.js';
   }
   requestAnimationFrame(heroFrame);
 
-  function enterHome(){
-    KS.fit(hc, 1.25); hero.render(0);
-    renderShop();
-  }
+  // the footer mark lines up under "Shop the collection": its column takes the button's width (and, on phones, its left edge)
+  function alignMark(){ var b = document.querySelector('.hero .cta'); if (!b || !b.offsetWidth) return; document.documentElement.style.setProperty('--ctaW', b.offsetWidth + 'px'); }
+  function enterHome(){ after(function(){ KS.fit(hc, 1.25); hero.render(0); alignMark(); }); }
 
   /* ---------- product page: big still or live 3D on the left, details on the right, more views on scroll ---------- */
-  var cur = null, curFinish = 'polished', curSize = null, mediaMode = 'images', inspecting = false;
+  var cur = null, curFinish = 'polished', curSize = null, mediaMode = 'images';
   var RING_MM = {'US 5':'15.7', 'US 6':'16.5', 'US 7':'17.3', 'US 8':'18.1', 'US 9':'19.0', 'US 10':'19.8', 'US 11':'20.6', 'US 12':'21.4'};
   function renderMedia(){
     var p = cur;
     $('mImages').setAttribute('aria-pressed', mediaMode === 'images'); $('m3d').setAttribute('aria-pressed', mediaMode === '3d');
     $('mImagesView').hidden = mediaMode !== 'images'; $('m3dView').hidden = mediaMode !== '3d';
-    $('mHint').textContent = mediaMode === 'images' ? 'Render · photos once prototypes are made' : (GL ? 'Live model' : '3D unavailable');
     if (mediaMode === 'images'){
       Viewer.unmount();
       var img = $('pMainImg'); img.alt = p.name + ' in ' + finishName(curFinish).toLowerCase(); fillImg(img, p.id, {w:1000, h:1020, finish:curFinish});
     } else {
       $('noGL').hidden = GL;
-      after(function(){ if (GL){ Viewer.mount($('p3dHost')); Viewer.finish(curFinish); if (Viewer.current() !== p.id) Viewer.show(p.id); Viewer.inspect(inspecting); } });
+      after(function(){ if (GL){ Viewer.mount($('p3dHost')); Viewer.finish(curFinish); if (Viewer.current() !== p.id) Viewer.show(p.id); Viewer.inspect(false); } });
     }
   }
   // scrolling down shows the object large and close up, one angle after another
   function renderDetails(){
     var p = cur, D = [{ay:.85, ax:-.3, dist:10.5, cap:'Three-quarter'}, {ay:1.5, ax:-.05, dist:8, cap:'Profile'}, {detail:true, cap:'The vermilion part'}, {ax:-1.15, ay:.3, dist:9, cap:'From above'}, {ay:-.6, ax:.35, dist:7, cap:'Edge and finish'}];
-    $('pDetails').innerHTML = D.map(function(d, i){ return '<figure class="dfig"><div class="plate clean"><img class="snap" alt="' + esc(p.name + ', ' + d.cap.toLowerCase()) + '" hidden></div><figcaption class="mono">' + (i + 1) + ' / ' + D.length + ' · ' + esc(d.cap) + '</figcaption></figure>'; }).join('');
+    $('pDetails').innerHTML = D.map(function(d, i){ return '<figure class="dfig"><div class="plate clean"><img class="snap" alt="' + esc(p.name + ', ' + d.cap.toLowerCase()) + '" hidden></div></figure>'; }).join('');
     after(function(){ $('pDetails').querySelectorAll('.dfig').forEach(function(f, i){ var o = Object.assign({w:1300, h:1330, finish:curFinish}, D[i]); delete o.cap; if (window.innerWidth < 600){ o.w = 800; o.h = 820; } fillImg(f.querySelector('img'), p.id, o); }); });
   }
   function renderSide(){
@@ -207,39 +167,28 @@ import { Covers } from './covers.js';
     $('pSizeWrap').innerHTML = p.sizes ? p.sizes.map(function(s){ return '<button type="button" data-s="' + esc(s) + '" aria-pressed="' + (s === curSize) + '">' + esc(s) + '</button>'; }).join('') : '';
     $('pFinishes').innerHTML = p.finishes.map(function(fid){ return '<button type="button" data-f="' + fid + '" aria-pressed="' + (fid === curFinish) + '" aria-label="' + finishName(fid) + '" title="' + finishName(fid) + '"><img alt="" hidden></button>'; }).join('');
     after(function(){ $('pFinishes').querySelectorAll('[data-f]').forEach(function(b){ fillImg(b.querySelector('img'), p.id, {w:220, h:220, finish:b.dataset.f, dist:16}); }); });
-    var dims = (p.spec.filter(function(r){ return r[0] === 'Size'; })[0] || [])[1];
-    $('pMeta').textContent = 'Shown in ' + finishName(curFinish) + (dims ? ' · ' + dims : '');
+    $('pMeta').textContent = finishName(curFinish);
   }
   $('pSizeWrap').addEventListener('click', function(e){ var b = e.target.closest('[data-s]'); if (!b) return; curSize = b.dataset.s; $('pSizeWrap').querySelectorAll('[data-s]').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); });
   $('pFinishes').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; curFinish = b.dataset.f;
     $('pFinishes').querySelectorAll('[data-f]').forEach(function(x){ x.setAttribute('aria-pressed', x === b); });
-    var dims = (cur.spec.filter(function(r){ return r[0] === 'Size'; })[0] || [])[1]; $('pMeta').textContent = 'Shown in ' + finishName(curFinish) + (dims ? ' · ' + dims : '');
+    $('pMeta').textContent = finishName(curFinish);
     Viewer.finish(curFinish); if (mediaMode === 'images') renderMedia(); renderDetails(); });
-  $('mImages').onclick = function(){ mediaMode = 'images'; inspecting = false; syncInspect(); renderMedia(); };
+  $('mImages').onclick = function(){ mediaMode = 'images'; renderMedia(); };
   $('m3d').onclick = function(){ mediaMode = '3d'; renderMedia(); };
   $('zIn').onclick = function(){ Viewer.zoomBy(.85); }; $('zOut').onclick = function(){ Viewer.zoomBy(1.18); };
-  function syncInspect(){ var b = $('pInspect'); b.setAttribute('aria-pressed', inspecting); b.querySelector('span').textContent = inspecting ? 'Back to full view' : 'Inspect the vermilion part'; }
-  $('pInspect').onclick = function(){
-    if (!GL){ var df = $('pDetails').children[2]; if (df) df.scrollIntoView({behavior: RM ? 'auto' : 'smooth', block:'center'}); return; }
-    inspecting = !inspecting; if (mediaMode !== '3d'){ mediaMode = '3d'; Viewer.show(cur.id); }
-    syncInspect(); renderMedia(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
-  };
+;
   $('pAdd').onclick = function(e){ e.stopPropagation(); if (cur.sizes && !curSize){ toast('Choose a size first'); $('pSizeWrap').querySelector('button').focus(); return; } addToCart(cur.id, curFinish, cur.sizes ? curSize : null); };
-  $('pBack').onclick = function(e){ if (history.length > 1 && prevPage){ e.preventDefault(); history.back(); } };
   function enterProduct(id){
     var p = product(id); if (!p){ location.hash = 'shop'; return; }
-    cur = p; curFinish = 'polished'; curSize = null; inspecting = false; mediaMode = 'images';
+    cur = p; curFinish = 'polished'; curSize = null; mediaMode = 'images';
     $('pName').textContent = p.name; $('pPrice').textContent = money(p.price);
-    $('pQuips').innerHTML = (p.quips || []).map(function(q){ return '<li>' + esc(q) + '</li>'; }).join('');
     $('pCopy').textContent = p.copy;
-    $('pSpec').innerHTML = [['Part', p.code]].concat(p.spec).map(function(r){ return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('');
+    $('pSpec').innerHTML = [['Part', p.code]].concat(p.spec).map(function(r){ return '<li>' + esc(r[0]) + ': ' + esc(r[1]) + '</li>'; }).join('');
     $('pSizeChartWrap').hidden = !p.sizes;
     $('pSizeChart').innerHTML = p.sizes ? '<thead><tr><th>Size</th><th>Inside diameter</th></tr></thead><tbody>' + p.sizes.map(function(s){ return '<tr><td>' + esc(s) + '</td><td>' + (RING_MM[s] || '—') + ' mm</td></tr>'; }).join('') + '</tbody>' : '';
-    $('pInspect').hidden = !GL;
-    var ps = p.post && post(p.post);
-    $('pPostWrap').innerHTML = ps ? '<span class="lab">From the journal</span>' + postCard(ps) : '';
-    if (ps) after(function(){ paintPosts($('pPostWrap'), [ps]); });
-    renderSide(); syncInspect(); renderMedia(); renderDetails();
+    var k = PRODUCTS.indexOf(p), nx = PRODUCTS[(k + 1) % PRODUCTS.length]; $('pNext').href = '#product-' + nx.id; $('pNext').setAttribute('aria-label', 'Next object: ' + nx.name);
+    renderSide(); renderMedia(); renderDetails();
   }
 
   /* ---------- journal ---------- */
@@ -320,27 +269,37 @@ import { Covers } from './covers.js';
     var url = LINKS[el.dataset.link];
     if (url){ el.href = url; return; }
     el.removeAttribute('href'); el.removeAttribute('target'); el.setAttribute('aria-disabled', 'true');
-    el.classList.add('soon'); if (el.classList.contains('spotify')) el.textContent = 'KRAM Radio on Spotify · coming soon';
+    el.classList.add('soon'); if (el.classList.contains('flink')){ el.title = 'Coming soon'; return; }
+    if (el.classList.contains('spotify')) el.textContent = 'KRAM Radio on Spotify · coming soon';
     else { var s = el.querySelector('.small'); if (s) s.textContent = 'A new playlist every two weeks · coming soon'; }
   });
+
+  /* ---------- footer: date and live New York time, newsletter ---------- */
+  var fmtDate = new Intl.DateTimeFormat('en-GB', {timeZone:'America/New_York', day:'2-digit', month:'short', year:'numeric'});
+  var fmtTime = new Intl.DateTimeFormat('en-GB', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+  function tick(){ var n = new Date(); $('fDate').textContent = fmtDate.format(n).toUpperCase(); $('fDate').setAttribute('datetime', n.toISOString()); $('fTime').textContent = fmtTime.format(n) + ' ET'; }
+  tick(); setInterval(tick, 1000);
+  // mailing list: the button wakes up once the terms box is ticked
+  $('fnlAgree').addEventListener('change', function(){ $('fnlGo').disabled = !this.checked; });
+  $('fnl').addEventListener('submit', function(e){ e.preventDefault(); var v = $('fnlEmail').value.trim();
+    if (!$('fnlAgree').checked) return;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ toast('Enter an email like name@example.com'); $('fnlEmail').focus(); return; }
+    $('fnlEmail').value = ''; toast('Thanks. Sign-up isn\'t connected yet, so nothing was saved.'); });
 
   /* ---------- router ---------- */
   var page = null, prevPage = null;
   function route(){
-    var h = (location.hash || '').slice(1), next = 'home', arg = null, toShop = h === 'shop';
+    var h = (location.hash || '').slice(1), next = 'home', arg = null;
     if (h.indexOf('product-') === 0){ next = 'product'; arg = h.slice(8); }
     else if (h.indexOf('post-') === 0){ next = 'post'; arg = h.slice(5); }
-    else if (h === 'journal' || h === 'about' || h === 'cart') next = h;
+    else if (h.indexOf('shop-') === 0){ next = 'shop'; var c0 = h.slice(5); if (CATS.some(function(c){ return c[0] === c0; })) cat = c0; }
+    else if (h === 'shop' || h === 'journal' || h === 'about' || h === 'cart' || h === 'terms' || h === 'account') next = h;
     Viewer.unmount();
     document.querySelectorAll('[data-page]').forEach(function(el){ el.hidden = el.dataset.page !== next; });
-    document.querySelectorAll('[data-nav]').forEach(function(a){ var on = a.dataset.nav === next || (next === 'product' && a.dataset.nav === 'home') || (next === 'post' && a.dataset.nav === 'journal'); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    document.querySelectorAll('[data-nav]').forEach(function(a){ var on = a.dataset.nav === next || ((next === 'product' || next === 'shop') && a.dataset.nav === 'shop') || (next === 'post' && a.dataset.nav === 'journal'); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     var prev = page; prevPage = prev; page = next; closeMini();
-    if (next === 'home') enterHome(); else if (next === 'product') enterProduct(arg); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'cart') renderCartPage();
-    paint($('footCv'), {layout:'scatter', count:9, seed:90, size:1.1});
-    // a fresh load or refresh always opens at the top; only a click on Shop scrolls down to the grid
-    // Shop and the logo always land at the top of the shop page
-    if (toShop && prev === 'home') toTop();
-    else window.scrollTo(0, 0);
+    if (next === 'home') enterHome(); else if (next === 'shop') renderShop(); else if (next === 'product') enterProduct(arg); else if (next === 'journal') renderJournal(); else if (next === 'post') enterPost(arg); else if (next === 'cart') renderCartPage();
+    window.scrollTo(0, 0);
   }
   try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
   window.addEventListener('hashchange', route);
@@ -349,8 +308,8 @@ import { Covers } from './covers.js';
   // smooth where it can animate; instant with reduced motion or in a background tab
   function toTop(){ window.scrollTo({top:0, behavior: RM || document.visibilityState !== 'visible' ? 'auto' : 'smooth'}); }
   var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){
-    if (page === 'home'){ KS.fit(hc, 1.25); if (view === 'grid') paintCards($('grid')); }
-    paint($('footCv'), {layout:'scatter', count:9, seed:90, size:1.1});
+    if (page === 'home'){ KS.fit(hc, 1.25); alignMark(); }
+    if (page === 'shop') paintCards($('grid'));
   }, 180); });
   renderCart(); route();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ if (page === 'home') KS.fit(hc, 1.25); });

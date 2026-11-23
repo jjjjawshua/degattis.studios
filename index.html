@@ -18,9 +18,9 @@
 
 <header class="bar">
   <div class="wrap">
-    <a class="logo" href="#shop" aria-label="kram shop"><svg class="kmk" aria-hidden="true"><use href="#kmark"/></svg><span class="wm">kram.</span></a>
+    <a class="logo" href="#" aria-label="kram. home"><svg class="kmk" aria-hidden="true"><use href="#kmark"/></svg><span class="wm">kram.</span></a>
     <nav aria-label="Pages">
-      <a href="#shop" data-nav="home">Shop</a><a href="#journal" data-nav="journal">Journal</a><a href="#about" data-nav="about">About</a>
+      <a href="#shop" data-nav="shop">Shop</a><a href="#journal" data-nav="journal">Journal</a><a href="#about" data-nav="about">About</a>
     </nav>
     <button class="cartBtn" id="cartBtn" type="button" aria-expanded="false" aria-controls="miniCart">Cart (<span id="cartCount">0</span>)</button>
     <div class="minicart" id="miniCart" hidden>
@@ -43,30 +43,19 @@
         <div class="big" id="heroMark" data-kmark="hero"></div>
         <div class="row" style="margin-top:16px">
           <p class="tag">Hard matter. Soft signal. Thirty objects in steel, each with one vermilion part.</p>
-          <button class="btn cta" type="button" id="shopCta">Shop the collection</button>
+          <a class="btn cta" href="#shop">Shop the collection</a>
         </div>
       </div>
     </div></div>
   </div>
+</div>
 
+<!-- ============ SHOP ============ -->
+<div data-page="shop" hidden>
   <main class="wrap">
-    <section class="block" id="shopSec" style="scroll-margin-top:72px">
-      <div class="shead stack"><h2>Everything we're making</h2><span class="mono">Shop · Collection 001</span><p>Browse the grid, or go one by one and turn each object in 3D. Tap a name to see its full page. Prices and specs are concept figures until prototypes are done.</p></div>
-      <div class="toolbar">
-        <div class="chips" id="catChips" role="group" aria-label="Category"></div>
-        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-          <span class="mono" id="shopCount"></span>
-          <div class="seg" role="group" aria-label="View">
-            <button type="button" id="viewGrid" aria-pressed="true">Grid</button>
-            <button type="button" id="viewOne" aria-pressed="false">One by one</button>
-          </div>
-        </div>
-      </div>
-      <div class="grid" id="grid"></div>
-      <div id="oneWrap" hidden>
-        <div class="slides" id="slides" tabindex="0" aria-label="Objects, one at a time. Scroll or use the arrow keys."></div>
-        <div class="slnav"><span class="mono" id="slCount"></span><div class="chips"><button class="btn ghost" id="slPrev" type="button">Previous</button><button class="btn ghost" id="slNext" type="button">Next</button></div></div>
-      </div>
+    <section class="gallery" id="shopSec" aria-label="Shop">
+      <nav class="catnav" id="catChips" aria-label="Category"></nav>
+      <div class="ggrid" id="grid"></div>
     </section>
   </main>
 </div>
@@ -74,7 +63,6 @@
 <!-- ============ PRODUCT ============ -->
 <div data-page="product" hidden>
   <main class="wrap pwrap">
-    <a class="back" href="#shop" id="pBack"><span aria-hidden="true">‹</span> Back</a>
     <div class="pp">
       <div class="pcol">
         <div class="mtabs">
@@ -82,13 +70,11 @@
             <button type="button" id="mImages" aria-pressed="true">Still</button>
             <button type="button" id="m3d" aria-pressed="false">3D</button>
           </div>
-          <span class="mono" id="mHint"></span>
         </div>
         <div class="pstage">
           <div class="plate clean" id="mImagesView"><img class="snap" id="pMainImg" alt=""></div>
           <div class="pstage3d" id="m3dView" hidden>
             <div class="host stage3d" id="p3dHost" role="img" aria-label="3D model. Drag to turn it; pinch or use the buttons to zoom."></div>
-            <span class="mono hint">Drag to turn · pinch or use + and − to zoom</span>
             <div class="ctl3d"><button type="button" id="zOut" aria-label="Zoom out">−</button><button type="button" id="zIn" aria-label="Zoom in">+</button></div>
             <p class="small" id="noGL" hidden style="position:absolute;left:14px;right:14px;top:14px;background:rgba(246,245,249,.92);padding:10px 12px">This browser couldn't start 3D graphics. The Still view shows renders of the same model.</p>
           </div>
@@ -98,17 +84,15 @@
       <aside class="pside" aria-label="Product details">
         <h1 class="pname" id="pName"></h1>
         <div class="pprice" id="pPrice"></div>
+        <p class="pfinname" id="pMeta"></p>
+        <div class="pfins" id="pFinishes" role="group" aria-label="Finish"></div>
         <div class="psizes" id="pSizeWrap" role="group" aria-label="Size"></div>
         <button class="addbtn" type="button" id="pAdd">Add to cart</button>
-        <ul class="quips" id="pQuips"></ul>
-        <p class="pmeta" id="pMeta"></p>
-        <details class="pmore"><summary>Technical details</summary><p id="pCopy"></p><dl class="spec" id="pSpec"></dl></details>
+        <details class="pmore" open><summary>Product details</summary><p id="pCopy"></p><ul class="pdlist" id="pSpec"></ul></details>
         <details class="pmore" id="pSizeChartWrap"><summary>Size chart</summary><table class="sizechart" id="pSizeChart"></table></details>
+        <details class="pmore"><summary>Shipping &amp; returns</summary><p>Shipping and returns are set when Collection 001 goes on sale. Prices here are concepts, and checkout isn't connected yet.</p></details>
         <details class="pmore"><summary>Care</summary><p>Wipe with a soft dry cloth. Polished and brushed steel can be brought back with a non-abrasive metal polish. Keep the vermilion part away from solvents and bleach.</p></details>
-        <button class="linkbtn" type="button" id="pInspect" aria-pressed="false"><span>Inspect the vermilion part</span></button>
-        <div class="pfins" id="pFinishes" role="group" aria-label="Finish"></div>
-        <p class="small">Concept price and specs. Checkout isn't connected yet.</p>
-        <div id="pPostWrap"></div>
+        <div class="prow"><a class="pnext" id="pNext" href="#shop">Next object ›</a></div>
       </aside>
     </div>
   </main>
@@ -154,6 +138,32 @@
   </main>
 </div>
 
+<!-- ============ TERMS ============ -->
+<div data-page="terms" hidden>
+  <main class="wrap">
+    <section class="block" style="padding-top:40px">
+      <div class="shead stack"><h1>Terms</h1><span class="mono">Draft · updated 23 Nov 2026</span><p>kram. is a concept preview. Nothing is for sale yet; these terms will be finalised before Collection 001 opens.</p></div>
+      <ol class="terms">
+        <li><b>Prices and specs are concepts.</b> Every price, size, weight and material on this site can change once prototypes are made.</li>
+        <li><b>No orders yet.</b> The cart is saved in your browser only. Checkout isn't connected, and nothing is charged.</li>
+        <li><b>Images are renders.</b> Product images are 3D renders until the pieces are photographed.</li>
+        <li><b>Your data.</b> This site doesn't collect personal data. The newsletter form doesn't send or store anything yet.</li>
+        <li><b>Questions.</b> Contact details arrive with the launch; for now follow along on Instagram and KRAM Radio.</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<!-- ============ ACCOUNT ============ -->
+<div data-page="account" hidden>
+  <main class="wrap">
+    <section class="block" style="padding-top:40px">
+      <div class="shead stack"><h1>Account</h1><span class="mono">Opens with checkout</span><p>Accounts, order history and saved addresses arrive when Collection 001 goes on sale. Until then your cart is kept in this browser.</p></div>
+      <div class="chips"><a class="btn dark" href="#cart">View cart</a><a class="btn ghost" href="#shop">Back to the shop</a></div>
+    </section>
+  </main>
+</div>
+
 <!-- ============ ABOUT ============ -->
 <div data-page="about" hidden>
   <main class="wrap">
@@ -188,12 +198,32 @@
   </main>
 </div>
 
-<footer class="site">
-  <div class="plate"><canvas id="footCv" aria-hidden="true"></canvas></div>
-  <div class="over"><div class="wrap fgrid">
-    <div class="fleft"><span class="mono">kram. · Objects of interest</span><div class="fmark" data-kmark="foot"></div></div>
-    <div class="fright"><nav aria-label="Footer"><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#about">About</a></nav><div class="spinlogo" id="spinLogo" role="img" aria-label="kram. mark"></div><a class="mono spotify" data-link="spotify" href="#" target="_blank" rel="noopener">KRAM Radio on Spotify ↗</a><span class="mono">Collection 001 · not for sale yet</span></div>
-  </div></div>
+<footer class="sfoot">
+  <div class="wrap">
+    <div class="frow ftime"><span class="mono" id="fTime" aria-label="Time in New York"></span><time class="mono" id="fDate"></time></div>
+    <div class="fcols">
+      <nav class="fcol" aria-labelledby="fh-follow"><p class="fh" id="fh-follow">Follow along</p>
+        <a class="flink" data-link="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
+        <a class="flink" data-link="spotify" href="#" target="_blank" rel="noopener">Spotify</a>
+      </nav>
+      <nav class="fcol" aria-labelledby="fh-shop"><p class="fh" id="fh-shop">Shop</p>
+        <a href="#shop">Everything</a><a href="#shop-carry">Carry</a><a href="#shop-jewellery">Jewellery</a><a href="#shop-desk">Desk</a><a href="#shop-home">Home</a>
+      </nav>
+      <nav class="fcol" aria-labelledby="fh-studio"><p class="fh" id="fh-studio">Studio</p>
+        <a href="#about">About</a><a href="#journal">Journal</a>
+      </nav>
+      <nav class="fcol" aria-labelledby="fh-boring"><p class="fh" id="fh-boring">Boring stuff</p>
+        <a href="#terms">Terms</a><a href="#account">Account</a><a href="#cart">Cart</a>
+      </nav>
+      <form class="fcol fnl" id="fnl" novalidate aria-labelledby="fh-mail"><p class="fh" id="fh-mail">Mailing list</p>
+        <label class="sr" for="fnlEmail">Email</label>
+        <input type="email" id="fnlEmail" placeholder="Email" autocomplete="email" required>
+        <label class="fagree"><input type="checkbox" id="fnlAgree"><span>I agree to the <a href="#terms">terms</a></span></label>
+        <button type="submit" id="fnlGo" disabled>Get updates</button>
+      </form>
+      <div class="fmarkcol"><div class="spinlogo" id="spinLogo" role="img" aria-label="kram. mark, turning"></div></div>
+    </div>
+  </div>
 </footer>
 
 
