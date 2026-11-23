@@ -1,6 +1,6 @@
-# kram.
+# degattis studios
 
-Site for **kram.**, a studio making metal objects with one vermilion part, with a journal and a link to KRAM Radio on Spotify.
+Site for **degattis studios**, a studio making metal objects with one vermilion part, with a journal and a link to degattis radio on Spotify.
 
 ## Run it
 
@@ -17,7 +17,7 @@ The build is a plain static site (`base: './'`), so `dist/` can go on any static
 
 | Page | Hash | What it does |
 | --- | --- | --- |
-| Home | `#` | The hero fills the first screen; the footer sits below |
+| Home | `#` | The degattis studios logo (`public/brand/degattis-logo.webp`) behind the frosted glass fills the first screen; the footer sits below |
 | Shop | `#shop`, `#shop-<category>` | 30 objects in a gallery by category; hover a tile for a second angle; footer links open it filtered |
 | Product | `#product-<id>` | Name, price, finish, size, add to cart and details; renders or live 3D, close-ups on scroll |
 | Journal | `#journal`, `#post-<id>` | Posts with generative covers |
@@ -50,6 +50,6 @@ three.js is pinned to `0.128.0`, the version the models and materials were tuned
 ## Not connected yet
 
 - **Checkout.** The cart works and is saved in the browser; checkout shows a message. Next step: Shopify Storefront API or Stripe Checkout.
-- **KRAM Radio.** Lives on Spotify. Paste the profile or playlist URL into `LINKS.spotify` in `src/data.js` (and the Instagram profile into `LINKS.instagram`); until then those links say "coming soon". Covers can be made with `public/tools/radio-covers.html`.
-- **Newsletter and contact form.** Both validate but send nothing; `hello@kram.studio` is a placeholder address.
+- **degattis radio.** Lives on Spotify. Paste the profile or playlist URL into `LINKS.spotify` in `src/data.js` (and the Instagram profile into `LINKS.instagram`); until then those links say "coming soon". Covers can be made with `public/tools/radio-covers.html`.
+- **Newsletter and contact form.** Both validate but send nothing; `hello@degattis.studio` is a placeholder address.
 - **Product photos and specs.** Images are 3D renders; names, prices and specs are concepts.

@@ -1,4 +1,4 @@
-/* KRAM data: catalogue, Radio editions, journal posts. All concept material — see flags in the UI. */
+/* degattis studios data: catalogue, Radio editions, journal posts. All concept material — see flags in the UI. */
 var CATS = [['all','All'],['carry','Carry'],['jewellery','Jewellery'],['desk','Desk'],['home','Home']];
 var FINISHES = [
   {id:'polished', name:'Polished', sw:'linear-gradient(135deg,#fff,#b9bcc4)', color:0xe9eaee, rough:.07, metal:1},
@@ -76,7 +76,7 @@ var PRODUCTS = [
   {id:'candle-holder', quips:["Dinner candle", "Steel cup", "Mood lighting", "Mood improved"], code:'KR-029', name:'Candle Holder', cat:'home', price:68, art:{palette:'halo', layout:'column', count:5, seed:129, size:1.3}, finishes:METAL, build:{type:'dish', r:1.2, h:1.3},
    short:'Turned steel holder for a dinner candle', copy:'A turned steel cup for a dinner candle, heavy enough not to tip, with a vermilion bar to lift it by.', spec:[['Material','316L stainless, solid'],['Size','Ø 48 × 32 mm'],['Weight','about 240 g'],['Fits','22 mm dinner candles']]},
   {id:'record-weight', quips:["Flat record", "Warm sound", "Low tide", "High fidelity"], code:'KR-030', name:'Record Weight', cat:'home', price:120, art:{palette:'night', layout:'ring', count:7, seed:130}, finishes:METAL, build:{type:'plate', shape:'circle', w:3.6, t:1.1, holes:[], screws:[[0, 0]], sr:.5, present:[-.6, .3, 0]},
-   short:'Turntable weight for KRAM Radio', copy:'A solid steel record weight that flattens a warped record on the platter. The vermilion centre sits over the spindle.', spec:[['Material','303 stainless, solid'],['Size','Ø 72 × 22 mm'],['Weight','about 420 g'],['Fits','Standard 7.2 mm spindle']]}
+   short:'Turntable weight for degattis radio', copy:'A solid steel record weight that flattens a warped record on the platter. The vermilion centre sits over the spindle.', spec:[['Material','303 stainless, solid'],['Size','Ø 72 × 22 mm'],['Weight','about 420 g'],['Fits','Standard 7.2 mm spindle']]}
 ];
 function product(id){ for(var i=0;i<PRODUCTS.length;i++) if(PRODUCTS[i].id===id) return PRODUCTS[i]; return null; }
 
@@ -94,7 +94,7 @@ var EDITIONS = [
 /* Journal posts: blocks are {p}, {h}, {art, cap}, {wire|render|detail: productId, cap}, {quote} */
 var POSTS = [
   {id:'loop-opener-cad', words:['Pencil outline', 'Bottle cap, 26 mm', 'Mouth, 21 × 13.5 mm', '1.5 mm bite', 'Chamfered edge', 'Replaceable steel lip', 'M3 × 4 screw', 'Vermilion anodised', '316L stainless', '4 mm plate', 'Waterjet', 'CNC chamfer', 'Tumbled', 'Key ring hole', 'First CAD pass', 'Weight test', 'Prototype next'], title:'Loop Opener, from sketch to CAD', tag:'Process', date:'09 Nov 2026', product:'loop-opener', art:{palette:'pool', layout:'column', count:4, seed:61, size:1.4},
-   dek:'How a bottle opener became the first KRAM object, and why the screw had to be vermilion.',
+   dek:'How a bottle opener became the first degattis studios object, and why the screw had to be vermilion.',
    body:[
      {p:'The Loop Opener started as a pencil outline traced around a real bottle cap. The rule was simple: one flat piece of steel, two holes, and a single fastener you would notice.'},
      {wire:'loop-opener', cap:'First CAD pass. One extruded plate, a stadium-shaped mouth for the cap and a small hole for the key ring.'},
@@ -106,7 +106,7 @@ var POSTS = [
      {p:'Next is a waterjet sample in 4 mm plate to check weight and feel before committing to tooling.'}
    ]},
   {id:'one-vermilion-screw', words:['One part in colour', '#E9553A', 'Bare metal', 'No logo', 'Holds a lip', 'Sets a tension', 'Closes a gate', 'Hex bolt', 'M2 titanium', 'Anodising tests', 'Titanium', 'Aluminium', 'Colour match', 'Recognise it across a room', 'Never decoration'], title:'One vermilion screw', tag:'Process', date:'02 Nov 2026', product:'bolt-ring', art:{palette:'cobalt', layout:'orbit', count:6, seed:62, streak:.22},
-   dek:'Why every KRAM object carries exactly one vermilion part, and nothing else in colour.',
+   dek:'Why every degattis studios object carries exactly one vermilion part, and nothing else in colour.',
    body:[
      {p:'Most brands put a logo on the outside. We wanted something you could recognise across a room without reading anything. The answer was a single piece of hardware in vermilion, #E9553A, on otherwise bare metal.'},
      {quote:'If you can see the screw, you know who made it.'},
@@ -129,17 +129,17 @@ var POSTS = [
      {render:'fold-clip', cap:'The Fold Clip is the exception: it needs spring steel, so it uses 17-7 PH instead.'},
      {p:'Aluminium covers the light parts: the key tag and the carabiner, where weight matters more than wear. Each material takes the vermilion anodising differently, which is the next thing to test.'}
    ]},
-  {id:'building-radio', words:['Ambient', 'Environmental', 'Electronic', 'Every two weeks', '4 December', 'Eight tracks', 'The crate', 'The deck', '33⅓', '45', 'Scratch', 'Spotify', 'Low Tide Hours', 'Machine Garden', 'Fog Index'], title:'Building KRAM Radio', tag:'Radio', date:'14 Nov 2026', art:{palette:'dawn', layout:'grid', count:9, seed:3, streak:.45},
+  {id:'building-radio', words:['Ambient', 'Environmental', 'Electronic', 'Every two weeks', '4 December', 'Eight tracks', 'The crate', 'The deck', '33⅓', '45', 'Scratch', 'Spotify', 'Low Tide Hours', 'Machine Garden', 'Fog Index'], title:'Building degattis radio', tag:'Radio', date:'14 Nov 2026', art:{palette:'dawn', layout:'grid', count:9, seed:3, streak:.45},
    dek:'A new playlist every two weeks, on Spotify.',
    body:[
-     {p:'KRAM Radio is the sound around the objects: ambient, environmental and electronic music that sits well together. A new edition goes up every two weeks, starting 4 December.'},
+     {p:'degattis radio is the sound around the objects: ambient, environmental and electronic music that sits well together. A new edition goes up every two weeks, starting 4 December.'},
      {art:{palette:'halo', layout:'orbit', count:7, seed:3, streak:.2, edge:0}, cap:'Each edition gets its own record artwork from the same renderer as the covers.'},
-     {p:'The playlists live on Spotify under KRAM Radio. Follow along there; the link is at the bottom of every page.'}
+     {p:'The playlists live on Spotify under degattis radio. Follow along there; the link is at the bottom of every page.'}
    ]}
 ];
 function post(id){ for(var i=0;i<POSTS.length;i++) if(POSTS[i].id===id) return POSTS[i]; return null; }
 
-/* Outside links. Paste the KRAM Radio Spotify URL and the Instagram profile URL here; until then the site says "coming soon". */
+/* Outside links. Paste the degattis radio Spotify URL and the Instagram profile URL here; until then the site says "coming soon". */
 var LINKS = { spotify: '', instagram: '' };
 
 export { CATS, FINISHES, METAL, PRODUCTS, product, EDITIONS, POSTS, post, LINKS };

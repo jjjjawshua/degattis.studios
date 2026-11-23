@@ -1,6 +1,6 @@
 import { KramSpectral } from './spectral.js';
 
-/* kram. journal covers: generative posters. Four pattern styles (stepped contours, maze, dither glow,
+/* degattis studios journal covers: generative posters. Four pattern styles (stepped contours, maze, dither glow,
    scribble) x palettes x layout choices, seeded per post plus a per-visit salt so they reshuffle. */
 var Covers = (function(){
   var FONT = '"Inter Tight","Helvetica Neue",Arial,sans-serif';
@@ -108,7 +108,7 @@ var Covers = (function(){
     var ps = Math.max(7, W/(land ? 110 : 70)); x.font = '500 ' + ps + 'px ' + FONT; x.fillStyle = pal.ink;
     if (r() < .75){ var lines = wrap(x, post.dek + ' ' + post.tag + ', ' + post.date + '.', W*(land ? .22 : .34)), py = H*(.38 + r()*.2), px = listOn && lx === m ? W*.56 : m;
       lines.forEach(function(l, i){ x.fillText(l, px, py + i*ps*1.3); }); }
-    x.font = '600 ' + ps + 'px ' + FONT; x.fillText('kram. journal', m, H - m*.8);
+    x.font = '600 ' + ps + 'px ' + FONT; x.fillText('degattis studios journal', m, H - m*.8);
     var dw = x.measureText(post.date).width; x.fillText(post.date, W - m - dw, H - m*.8);
   }
   return {draw:draw};

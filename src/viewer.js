@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { KramSpectral } from './spectral.js';
 import { FINISHES, product } from './data.js';
 
-/* KRAM Viewer: one WebGL renderer shared by every page. mount() moves the live canvas into a container;
+/* degattis studios Viewer: one WebGL renderer shared by every page. mount() moves the live canvas into a container;
    snapshot() renders a still PNG (renders, thumbnails, CAD line drawings). */
 var Viewer = (function(){
   var T = THREE, KS = KramSpectral, ok = false;
@@ -69,12 +69,12 @@ var Viewer = (function(){
     KS.create(c, Object.assign({}, p.art, {edge:.15})).render(0);
     var x = c.getContext('2d'); x.fillStyle = '#fff';
     if (mode === 'poster'){
-      x.font = '700 ' + (w*.2) + 'px "Inter Tight", Arial, sans-serif'; x.fillText('kram.', w*.06, h*.17);
+      x.font = '700 ' + (w*.08) + 'px "Inter Tight", Arial, sans-serif'; x.fillText('degattis studios', w*.06, h*.17);
       x.font = '500 ' + (w*.022) + 'px "Inter Tight", Arial, sans-serif'; x.fillStyle = 'rgba(34,27,41,.62)';
       x.fillText('KR-001  KR-002  KR-003  KR-004  KR-005  KR-006  KR-007  KR-008  KR-009  KR-010', w*.06, h*.95);
       x.fillText('COLLECTION 001 · OBJECTS OF INTEREST', w*.06, h*.92);
     } else {
-      x.font = '700 ' + (w*.12) + 'px "Inter Tight", Arial, sans-serif'; x.fillText('kram.', w*.08, h*.12);
+      x.font = '700 ' + (w*.055) + 'px "Inter Tight", Arial, sans-serif'; x.fillText('degattis studios', w*.08, h*.12);
       x.strokeStyle = 'rgba(255,255,255,.95)'; x.lineWidth = w*.006;
       for (var i = 0; i < 12; i++){ var cx = w*(.22 + (i%3)*.28), cy = h*(.27 + Math.floor(i/3)*.19); x.beginPath(); x.arc(cx, cy, w*.11, 0, Math.PI*2); x.stroke(); }
       x.fillStyle = '#e9553a'; x.beginPath(); x.arc(w*.86, h*.93, w*.04, 0, Math.PI*2); x.fill();

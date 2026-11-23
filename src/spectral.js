@@ -16,7 +16,7 @@
   var DEFAULTS = {
     seed: 7, palette: 'halo', layout: 'ring', count: 8, size: 1, spread: 1, cx: 0.5, cy: 0.5,
     blur: 0.5, streak: 0.6, reed: 0.5, reedWidth: 0.014, veil: 0.1, edge: 0.18,
-    grain: 0.35, halftone: 0.35, motion: 1, spin: 0, pointer: null
+    grain: 0.35, halftone: 0.35, motion: 1, spin: 0, pointer: null, under: null
   };
 
   function rng(seed) {
@@ -198,6 +198,29 @@
     for (var s = 0; s < S.length; s++) {
       var st = S[s], ccx = st.x + st.w / 2 + st.j * st.w * o.reed * 1.4, sw = st.w * mag;
       ctx.drawImage(cur, (ccx - sw / 2) * sx, 0, sw * sx, cur.height, st.x, 0, st.w + 0.75, H);
+    }
+    // 3b. an image (e.g. a logo) blurred the same way as the shapes (downscaled with the same vertical smear),
+    // laid in after the ribs so its letters stay level, then glazed by the same sheen, veil and grain.
+    // under: {img, cx, cy, w, h, soft, parts}; w and h cap its size as fractions of the canvas;
+    // soft (0-1) is its blur relative to the shapes' (1 = identical). parts: [{y0, y1, soft}] blurs
+    // horizontal bands of the image separately (y0/y1 as fractions of its height).
+    var u = o.under;
+    if (u && u.img && u.img.naturalWidth) {
+      var ar = u.img.naturalWidth / u.img.naturalHeight, lw = Math.min(W * (u.w || 0.8), H * (u.h || 0.5) * ar), lh = lw / ar;
+      var lx = (u.cx == null ? 0.5 : u.cx) * W - lw / 2, ly = (u.cy == null ? 0.5 : u.cy) * H - lh / 2;
+      var parts = u.parts || [{ y0: 0, y1: 1, soft: u.soft }], iw = u.img.naturalWidth, ih = u.img.naturalHeight;
+      ctx.globalCompositeOperation = dark ? 'screen' : 'multiply'; ctx.globalAlpha = u.alpha == null ? 1 : u.alpha;
+      for (var pi = 0; pi < parts.length; pi++) {
+        var pt2 = parts[pi], sf = pt2.soft == null ? 1 : pt2.soft;
+        var lds = Math.max(1, ds * sf), lbw = Math.max(4, Math.ceil(W / lds)), lbh = Math.max(3, Math.ceil(H / (lds * vy)));
+        var LB = this.buf(18 + pi, lbw, lbh), lc = LB.getContext('2d'), lkx = lbw / W, lky = lbh / H;
+        lc.clearRect(0, 0, lbw, lbh);
+        if (FILTER_OK) lc.filter = 'blur(' + (0.6 + o.blur * 0.8).toFixed(2) + 'px)';
+        lc.drawImage(u.img, 0, pt2.y0 * ih, iw, (pt2.y1 - pt2.y0) * ih, lx * lkx, (ly + pt2.y0 * lh) * lky, lw * lkx, (pt2.y1 - pt2.y0) * lh * lky);
+        lc.filter = 'none';
+        ctx.drawImage(LB, 0, 0, W, H);
+      }
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
     }
     if (o.streak > 0) { ctx.globalAlpha = Math.min(1, o.streak * 0.9); ctx.globalCompositeOperation = dark ? 'overlay' : 'soft-light'; ctx.drawImage(this.fiber, 0, 0, W, H); }
     if (o.reed > 0) { ctx.globalAlpha = o.reed * 0.16; ctx.globalCompositeOperation = dark ? 'screen' : 'soft-light'; ctx.drawImage(this.rib, 0, 0, W, H); }
