@@ -419,3 +419,14 @@ main.wrap{padding-top:56px}
 .hero .over .wrap{justify-content:flex-start;gap:clamp(20px,3vw,40px)}
 .hero .over .row{margin-top:auto}
 .side .logo .w2{margin-left:.3em}
+/* hero title legibility: a soft ink halo lifts the white off the pale field, and the letters breathe a little */
+.htitle{text-shadow:0 1px 2px rgba(27,29,36,.22),0 4px 30px rgba(27,29,36,.16)}
+.htitle .w1{letter-spacing:-.035em}
+.htitle .w2{letter-spacing:.015em;margin-top:.04em;font-variation-settings:"ROND" 100,"wght" 900!important}
+/* side column: more air from the newsletter down */
+.side .fnl{margin-top:44px}
+.side .fh{margin-bottom:14px}
+.side .fagree{margin-top:14px}
+.side #fnlGo{margin-top:14px}
+.sfootline{padding-top:40px;gap:20px}
+.side .ftime{gap:6px 14px}
