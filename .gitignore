@@ -1,11 +1,7 @@
-# macOS
+node_modules
+dist
 .DS_Store
-
-# Environment
-.env
-
-# Logs
 *.log
-
-# Project specific
-CNAME
+.env
+.env.*
+.vercel

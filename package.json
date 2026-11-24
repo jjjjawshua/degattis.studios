@@ -1,0 +1,18 @@
+{
+  "name": "degattis-studios",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "degattis studios — metal objects with one cobalt part, a journal and degattis radio.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.128.0"
+  },
+  "devDependencies": {
+    "vite": "5.4.11"
+  }
+}
