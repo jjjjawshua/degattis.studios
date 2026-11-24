@@ -1,9 +1,9 @@
 {
-  "name": "kram-site",
+  "name": "degattis-studios",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "degattis studios — metal objects with one vermilion part, degattis radio, journal and open-call submissions.",
+  "description": "degattis studios — metal objects with one cobalt part, a journal and degattis radio.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

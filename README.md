@@ -11,7 +11,7 @@ npm run build     # static site in dist/
 npm run preview   # serve the built site
 ```
 
-The build is a plain static site (`base: './'`), so `dist/` can go on any static host: Vercel, Netlify, Cloudflare Pages or GitHub Pages.
+The build is a plain static site (`base: './'`). It is live at **https://degattisstudios.com**: every push to `main` runs `.github/workflows/pages.yml`, which builds `dist/` and publishes it to GitHub Pages. `public/CNAME` keeps the custom domain. The previous site is kept on the `legacy-site` branch.
 
 ## What's here
 
